@@ -10,7 +10,7 @@ prophet==1.1.5
 scikit-learn>=1.4.2
 pandas>2
 plotly>=5.0.0
-
+streamlit-autorefresh
 
 # Retry handling
 tenacity>=8.2.3
