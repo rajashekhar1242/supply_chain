@@ -1,0 +1,9 @@
+2025-09-21 13:02:54,865 - [INFO] - Ingestion pipeline started
+2025-09-21 13:02:54,866 - [INFO] - Settings loaded (env=dev)
+2025-09-21 13:02:54,866 - [INFO] - Initializing Supabase client
+2025-09-21 13:02:56,017 - [INFO] - Connecting to imap.gmail.com...
+2025-09-21 13:02:57,874 - [INFO] - Fetching emails started...
+2025-09-21 13:02:58,569 - [INFO] - Matched 0 emails with filters
+2025-09-21 13:02:58,570 - [INFO] - Matched 0 emails with allowed subjects
+2025-09-21 13:02:58,570 - [INFO] - Processed 0 attachments this run
+2025-09-21 13:02:59,166 - [INFO] - Sleeping 300s before next cycle...

@@ -1,0 +1,318 @@
+[2025-10-08T18:48:01.270+0000] {local_task_job_runner.py:120} INFO - ::group::Pre task execution logs
+[2025-10-08T18:48:01.316+0000] {taskinstance.py:2076} INFO - Dependencies all met for dep_context=non-requeueable deps ti=<TaskInstance: supplychain_pipeline_dag.analytics_alerts_group.analytics scheduled__2025-10-08T18:00:00+00:00 [queued]>
+[2025-10-08T18:48:01.339+0000] {taskinstance.py:2076} INFO - Dependencies all met for dep_context=requeueable deps ti=<TaskInstance: supplychain_pipeline_dag.analytics_alerts_group.analytics scheduled__2025-10-08T18:00:00+00:00 [queued]>
+[2025-10-08T18:48:01.340+0000] {taskinstance.py:2306} INFO - Starting attempt 1 of 4
+[2025-10-08T18:48:01.376+0000] {taskinstance.py:2330} INFO - Executing <Task(PythonOperator): analytics_alerts_group.analytics> on 2025-10-08 18:00:00+00:00
+[2025-10-08T18:48:01.428+0000] {logging_mixin.py:188} WARNING - /home/***/.local/lib/python3.12/site-packages/***/task/task_runner/standard_task_runner.py:61 DeprecationWarning: This process (pid=278) is multi-threaded, use of fork() may lead to deadlocks in the child.
+[2025-10-08T18:48:01.421+0000] {standard_task_runner.py:90} INFO - Running: ['***', 'tasks', 'run', 'supplychain_pipeline_dag', 'analytics_alerts_group.analytics', 'scheduled__2025-10-08T18:00:00+00:00', '--job-id', '63', '--raw', '--subdir', 'DAGS_FOLDER/supplychain_pipeline_dag.py', '--cfg-path', '/tmp/tmpgz15c3hy']
+[2025-10-08T18:48:01.432+0000] {standard_task_runner.py:63} INFO - Started process 314 to run task
+[2025-10-08T18:48:01.433+0000] {standard_task_runner.py:91} INFO - Job 63: Subtask analytics_alerts_group.analytics
+[2025-10-08T18:48:01.703+0000] {task_command.py:426} INFO - Running <TaskInstance: supplychain_pipeline_dag.analytics_alerts_group.analytics scheduled__2025-10-08T18:00:00+00:00 [running]> on host e4177d60949e
+[2025-10-08T18:48:01.954+0000] {taskinstance.py:2648} INFO - Exporting env vars: AIRFLOW_CTX_DAG_OWNER='***' AIRFLOW_CTX_DAG_ID='supplychain_pipeline_dag' AIRFLOW_CTX_TASK_ID='analytics_alerts_group.analytics' AIRFLOW_CTX_EXECUTION_DATE='2025-10-08T18:00:00+00:00' AIRFLOW_CTX_TRY_NUMBER='1' AIRFLOW_CTX_DAG_RUN_ID='scheduled__2025-10-08T18:00:00+00:00'
+[2025-10-08T18:48:01.958+0000] {taskinstance.py:430} INFO - ::endgroup::
+[2025-10-08T18:48:01.989+0000] {pipeline.py:12} INFO - Starting analytics pipeline
+[2025-10-08T18:48:01.992+0000] {config.py:75} INFO - Settings loaded (env=default)
+[2025-10-08T18:48:02.076+0000] {pipeline.py:17} INFO - Running Customer KPI Risk Predictions
+[2025-10-08T18:48:02.078+0000] {customer_risk.py:219} INFO - Starting Customer KPI Risk Pipeline...
+[2025-10-08T18:48:02.079+0000] {customer_risk.py:51} INFO - Calculating real OTIF % from last 180 days of order data...
+[2025-10-08T18:48:02.820+0000] {_client.py:1025} INFO - HTTP Request: GET https://ytuiqgrpbwdxrmbzssrb.supabase.co/rest/v1/fact_order_line?select=customer_id%2Corder_placement_date%2C%22On+Time%22%2C%22In+Full%22%2C%22On+Time+In+Full%22&order_placement_date=gte.2025-04-11 "HTTP/2 200 OK"
+[2025-10-08T18:48:03.317+0000] {_client.py:1025} INFO - HTTP Request: GET https://ytuiqgrpbwdxrmbzssrb.supabase.co/rest/v1/dim_targets_order?select=%2A "HTTP/2 200 OK"
+[2025-10-08T18:48:03.618+0000] {_client.py:1025} INFO - HTTP Request: GET https://ytuiqgrpbwdxrmbzssrb.supabase.co/rest/v1/dim_customers?select=customer_id%2Ccity "HTTP/2 200 OK"
+[2025-10-08T18:48:03.628+0000] {customer_risk.py:122} INFO - Calculated OTIF, trends, and time-based features for 35 customers.
+[2025-10-08T18:48:03.629+0000] {customer_risk.py:129} INFO - Preparing dataset with engineered features...
+[2025-10-08T18:48:03.639+0000] {customer_risk.py:161} INFO - Dataset prepared with 35 rows and features: ['otif_pct', 'on_time_pct', 'in_full_pct', 'total_orders', 'target_otif', 'target_ontime', 'target_infull', 'recent_otif_trend', 'city_encoded', 'avg_days_since_last_order', 'avg_order_day_of_week', 'avg_order_month']
+[2025-10-08T18:48:03.641+0000] {customer_risk.py:168} INFO - Generating predictions...
+[2025-10-08T18:48:03.745+0000] {logging_mixin.py:188} INFO - [LightGBM] [Warning] min_data_in_leaf is set=1, min_child_samples=20 will be ignored. Current value: min_data_in_leaf=1
+[2025-10-08T18:48:03.765+0000] {logging_mixin.py:188} INFO - [LightGBM] [Warning] min_data_in_leaf is set=1, min_child_samples=20 will be ignored. Current value: min_data_in_leaf=1
+[2025-10-08T18:48:03.775+0000] {logging_mixin.py:188} INFO - [LightGBM] [Info] Number of positive: 31, number of negative: 4
+[2025-10-08T18:48:03.788+0000] {logging_mixin.py:188} INFO - [LightGBM] [Info] Auto-choosing row-wise multi-threading, the overhead of testing was 0.005993 seconds.
+You can set `force_row_wise=true` to remove the overhead.
+And if memory is not enough, you can set `force_col_wise=true`.
+[2025-10-08T18:48:03.793+0000] {logging_mixin.py:188} INFO - [LightGBM] [Info] Total Bins 129
+[2025-10-08T18:48:03.796+0000] {logging_mixin.py:188} INFO - [LightGBM] [Info] Number of data points in the train set: 35, number of used features: 12
+[2025-10-08T18:48:03.801+0000] {logging_mixin.py:188} INFO - [LightGBM] [Info] [binary:BoostFromScore]: pavg=0.885714 -> initscore=2.047693
+[2025-10-08T18:48:03.808+0000] {logging_mixin.py:188} INFO - [LightGBM] [Info] Start training from score 2.047693
+[2025-10-08T18:48:03.814+0000] {logging_mixin.py:188} INFO - [LightGBM] [Warning] No further splits with positive gain, best gain: -inf
+[2025-10-08T18:48:03.816+0000] {logging_mixin.py:188} INFO - [LightGBM] [Warning] No further splits with positive gain, best gain: -inf
+[2025-10-08T18:48:03.817+0000] {logging_mixin.py:188} INFO - [LightGBM] [Warning] No further splits with positive gain, best gain: -inf
+[2025-10-08T18:48:03.819+0000] {logging_mixin.py:188} INFO - [LightGBM] [Warning] No further splits with positive gain, best gain: -inf
+[2025-10-08T18:48:03.820+0000] {logging_mixin.py:188} INFO - [LightGBM] [Warning] No further splits with positive gain, best gain: -inf
+[2025-10-08T18:48:03.822+0000] {logging_mixin.py:188} INFO - [LightGBM] [Warning] No further splits with positive gain, best gain: -inf
+[2025-10-08T18:48:03.826+0000] {logging_mixin.py:188} INFO - [LightGBM] [Warning] No further splits with positive gain, best gain: -inf
+[2025-10-08T18:48:03.827+0000] {logging_mixin.py:188} INFO - [LightGBM] [Warning] No further splits with positive gain, best gain: -inf
+[2025-10-08T18:48:03.829+0000] {logging_mixin.py:188} INFO - [LightGBM] [Warning] No further splits with positive gain, best gain: -inf
+[2025-10-08T18:48:03.834+0000] {logging_mixin.py:188} INFO - [LightGBM] [Warning] No further splits with positive gain, best gain: -inf
+[2025-10-08T18:48:03.835+0000] {logging_mixin.py:188} INFO - [LightGBM] [Warning] No further splits with positive gain, best gain: -inf
+[2025-10-08T18:48:03.837+0000] {logging_mixin.py:188} INFO - [LightGBM] [Warning] No further splits with positive gain, best gain: -inf
+[2025-10-08T18:48:03.839+0000] {logging_mixin.py:188} INFO - [LightGBM] [Warning] No further splits with positive gain, best gain: -inf
+[2025-10-08T18:48:03.841+0000] {logging_mixin.py:188} INFO - [LightGBM] [Warning] No further splits with positive gain, best gain: -inf
+[2025-10-08T18:48:03.843+0000] {logging_mixin.py:188} INFO - [LightGBM] [Warning] No further splits with positive gain, best gain: -inf
+[2025-10-08T18:48:03.844+0000] {logging_mixin.py:188} INFO - [LightGBM] [Warning] No further splits with positive gain, best gain: -inf
+[2025-10-08T18:48:03.846+0000] {logging_mixin.py:188} INFO - [LightGBM] [Warning] No further splits with positive gain, best gain: -inf
+[2025-10-08T18:48:03.848+0000] {logging_mixin.py:188} INFO - [LightGBM] [Warning] No further splits with positive gain, best gain: -inf
+[2025-10-08T18:48:03.850+0000] {logging_mixin.py:188} INFO - [LightGBM] [Warning] No further splits with positive gain, best gain: -inf
+[2025-10-08T18:48:03.851+0000] {logging_mixin.py:188} INFO - [LightGBM] [Warning] No further splits with positive gain, best gain: -inf
+[2025-10-08T18:48:03.852+0000] {logging_mixin.py:188} INFO - [LightGBM] [Warning] No further splits with positive gain, best gain: -inf
+[2025-10-08T18:48:03.854+0000] {logging_mixin.py:188} INFO - [LightGBM] [Warning] No further splits with positive gain, best gain: -inf
+[2025-10-08T18:48:03.857+0000] {logging_mixin.py:188} INFO - [LightGBM] [Warning] No further splits with positive gain, best gain: -inf
+[2025-10-08T18:48:03.860+0000] {logging_mixin.py:188} INFO - [LightGBM] [Warning] No further splits with positive gain, best gain: -inf
+[2025-10-08T18:48:03.862+0000] {logging_mixin.py:188} INFO - [LightGBM] [Warning] No further splits with positive gain, best gain: -inf
+[2025-10-08T18:48:03.863+0000] {logging_mixin.py:188} INFO - [LightGBM] [Warning] No further splits with positive gain, best gain: -inf
+[2025-10-08T18:48:03.865+0000] {logging_mixin.py:188} INFO - [LightGBM] [Warning] No further splits with positive gain, best gain: -inf
+[2025-10-08T18:48:03.866+0000] {logging_mixin.py:188} INFO - [LightGBM] [Warning] No further splits with positive gain, best gain: -inf
+[2025-10-08T18:48:03.867+0000] {logging_mixin.py:188} INFO - [LightGBM] [Warning] No further splits with positive gain, best gain: -inf
+[2025-10-08T18:48:03.868+0000] {logging_mixin.py:188} INFO - [LightGBM] [Warning] No further splits with positive gain, best gain: -inf
+[2025-10-08T18:48:03.869+0000] {logging_mixin.py:188} INFO - [LightGBM] [Warning] No further splits with positive gain, best gain: -inf
+[2025-10-08T18:48:03.871+0000] {logging_mixin.py:188} INFO - [LightGBM] [Warning] No further splits with positive gain, best gain: -inf
+[2025-10-08T18:48:03.873+0000] {logging_mixin.py:188} INFO - [LightGBM] [Warning] No further splits with positive gain, best gain: -inf
+[2025-10-08T18:48:03.875+0000] {logging_mixin.py:188} INFO - [LightGBM] [Warning] No further splits with positive gain, best gain: -inf
+[2025-10-08T18:48:03.876+0000] {logging_mixin.py:188} INFO - [LightGBM] [Warning] No further splits with positive gain, best gain: -inf
+[2025-10-08T18:48:03.877+0000] {logging_mixin.py:188} INFO - [LightGBM] [Warning] No further splits with positive gain, best gain: -inf
+[2025-10-08T18:48:03.879+0000] {logging_mixin.py:188} INFO - [LightGBM] [Warning] No further splits with positive gain, best gain: -inf
+[2025-10-08T18:48:03.880+0000] {logging_mixin.py:188} INFO - [LightGBM] [Warning] No further splits with positive gain, best gain: -inf
+[2025-10-08T18:48:03.881+0000] {logging_mixin.py:188} INFO - [LightGBM] [Warning] No further splits with positive gain, best gain: -inf
+[2025-10-08T18:48:03.883+0000] {logging_mixin.py:188} INFO - [LightGBM] [Warning] No further splits with positive gain, best gain: -inf
+[2025-10-08T18:48:03.884+0000] {logging_mixin.py:188} INFO - [LightGBM] [Warning] No further splits with positive gain, best gain: -inf
+[2025-10-08T18:48:03.886+0000] {logging_mixin.py:188} INFO - [LightGBM] [Warning] No further splits with positive gain, best gain: -inf
+[2025-10-08T18:48:03.888+0000] {logging_mixin.py:188} INFO - [LightGBM] [Warning] No further splits with positive gain, best gain: -inf
+[2025-10-08T18:48:03.889+0000] {logging_mixin.py:188} INFO - [LightGBM] [Warning] No further splits with positive gain, best gain: -inf
+[2025-10-08T18:48:03.891+0000] {logging_mixin.py:188} INFO - [LightGBM] [Warning] No further splits with positive gain, best gain: -inf
+[2025-10-08T18:48:03.893+0000] {logging_mixin.py:188} INFO - [LightGBM] [Warning] No further splits with positive gain, best gain: -inf
+[2025-10-08T18:48:03.894+0000] {logging_mixin.py:188} INFO - [LightGBM] [Warning] No further splits with positive gain, best gain: -inf
+[2025-10-08T18:48:03.895+0000] {logging_mixin.py:188} INFO - [LightGBM] [Warning] No further splits with positive gain, best gain: -inf
+[2025-10-08T18:48:03.897+0000] {logging_mixin.py:188} INFO - [LightGBM] [Warning] No further splits with positive gain, best gain: -inf
+[2025-10-08T18:48:03.898+0000] {logging_mixin.py:188} INFO - [LightGBM] [Warning] No further splits with positive gain, best gain: -inf
+[2025-10-08T18:48:03.908+0000] {logging_mixin.py:188} INFO - [LightGBM] [Warning] min_data_in_leaf is set=1, min_child_samples=20 will be ignored. Current value: min_data_in_leaf=1
+[2025-10-08T18:48:03.910+0000] {customer_risk.py:195} INFO - Uploading risk predictions to Supabase...
+[2025-10-08T18:48:04.117+0000] {_client.py:1025} INFO - HTTP Request: POST https://ytuiqgrpbwdxrmbzssrb.supabase.co/rest/v1/kpi_risk_predictions?columns=%22prediction_date%22%2C%22customer_id%22%2C%22risk_score%22%2C%22risk_label%22 "HTTP/2 201 Created"
+[2025-10-08T18:48:04.121+0000] {customer_risk.py:213} INFO - Successfully inserted 35 predictions.
+[2025-10-08T18:48:04.122+0000] {customer_risk.py:230} INFO - Customer risk pipeline completed successfully.
+[2025-10-08T18:48:04.123+0000] {pipeline.py:20} INFO - Running KPI analysis
+[2025-10-08T18:48:04.448+0000] {_client.py:1025} INFO - HTTP Request: GET https://ytuiqgrpbwdxrmbzssrb.supabase.co/rest/v1/kpi_summary?select=%2A "HTTP/2 200 OK"
+[2025-10-08T18:48:04.471+0000] {kpi_analysis.py:16} INFO - Fetched 35 KPI summary rows
+[2025-10-08T18:48:04.489+0000] {pipeline.py:22} INFO - KPI analysis complete (35 records)
+[2025-10-08T18:48:04.501+0000] {pipeline.py:24} INFO - Running demand forecasting
+[2025-10-08T18:48:04.504+0000] {forecasting.py:9} INFO - Running demand forecasting
+[2025-10-08T18:48:04.679+0000] {_client.py:1025} INFO - HTTP Request: GET https://ytuiqgrpbwdxrmbzssrb.supabase.co/rest/v1/fact_order_line?select=order_placement_date%2Cproduct_id%2Corder_qty "HTTP/2 200 OK"
+[2025-10-08T18:48:04.887+0000] {filesystem.py:118} DEBUG - input tempfile: /tmp/tmp8f5jweb9/2zkf9qll.json
+[2025-10-08T18:48:04.911+0000] {filesystem.py:118} DEBUG - input tempfile: /tmp/tmp8f5jweb9/v2_bpv3e.json
+[2025-10-08T18:48:04.917+0000] {model.py:2042} DEBUG - idx 0
+[2025-10-08T18:48:04.918+0000] {model.py:2043} DEBUG - running CmdStan, num_threads: None
+[2025-10-08T18:48:04.919+0000] {model.py:2055} DEBUG - CmdStan args: ['/home/***/.local/lib/python3.12/site-packages/prophet/stan_model/prophet_model.bin', 'random', 'seed=5933', 'data', 'file=/tmp/tmp8f5jweb9/2zkf9qll.json', 'init=/tmp/tmp8f5jweb9/v2_bpv3e.json', 'output', 'file=/tmp/tmp8f5jweb9/prophet_modeldtx55t03/prophet_model-20251008184804.csv', 'method=optimize', 'algorithm=lbfgs', 'iter=10000']
+[2025-10-08T18:48:04.921+0000] {logging_mixin.py:188} WARNING - 18:48:04 - cmdstanpy - INFO - Chain [1] start processing
+[2025-10-08T18:48:04.920+0000] {model.py:2058} INFO - Chain [1] start processing
+[2025-10-08T18:48:04.974+0000] {logging_mixin.py:188} WARNING - 18:48:04 - cmdstanpy - INFO - Chain [1] done processing
+[2025-10-08T18:48:04.973+0000] {model.py:2115} INFO - Chain [1] done processing
+[2025-10-08T18:48:05.106+0000] {forecasting.py:68} WARNING - High MAPE (100.0%) for product 25891101 — forecast may be unreliable
+[2025-10-08T18:48:05.286+0000] {_client.py:1025} INFO - HTTP Request: POST https://ytuiqgrpbwdxrmbzssrb.supabase.co/rest/v1/policy_recommendations "HTTP/2 201 Created"
+[2025-10-08T18:48:05.289+0000] {forecasting.py:84} INFO - Forecast for product 25891101: 116 units (MAPE: 100.0%)
+[2025-10-08T18:48:05.341+0000] {filesystem.py:118} DEBUG - input tempfile: /tmp/tmp8f5jweb9/0x7fdk3y.json
+[2025-10-08T18:48:05.367+0000] {filesystem.py:118} DEBUG - input tempfile: /tmp/tmp8f5jweb9/i8olbb8k.json
+[2025-10-08T18:48:05.371+0000] {model.py:2042} DEBUG - idx 0
+[2025-10-08T18:48:05.372+0000] {model.py:2043} DEBUG - running CmdStan, num_threads: None
+[2025-10-08T18:48:05.373+0000] {model.py:2055} DEBUG - CmdStan args: ['/home/***/.local/lib/python3.12/site-packages/prophet/stan_model/prophet_model.bin', 'random', 'seed=15745', 'data', 'file=/tmp/tmp8f5jweb9/0x7fdk3y.json', 'init=/tmp/tmp8f5jweb9/i8olbb8k.json', 'output', 'file=/tmp/tmp8f5jweb9/prophet_modelseft70t8/prophet_model-20251008184805.csv', 'method=optimize', 'algorithm=lbfgs', 'iter=10000']
+[2025-10-08T18:48:05.375+0000] {logging_mixin.py:188} WARNING - 18:48:05 - cmdstanpy - INFO - Chain [1] start processing
+[2025-10-08T18:48:05.375+0000] {model.py:2058} INFO - Chain [1] start processing
+[2025-10-08T18:48:05.401+0000] {logging_mixin.py:188} WARNING - 18:48:05 - cmdstanpy - INFO - Chain [1] done processing
+[2025-10-08T18:48:05.401+0000] {model.py:2115} INFO - Chain [1] done processing
+[2025-10-08T18:48:05.530+0000] {forecasting.py:68} WARNING - High MAPE (62.3%) for product 25891102 — forecast may be unreliable
+[2025-10-08T18:48:05.739+0000] {_client.py:1025} INFO - HTTP Request: POST https://ytuiqgrpbwdxrmbzssrb.supabase.co/rest/v1/policy_recommendations "HTTP/2 201 Created"
+[2025-10-08T18:48:05.741+0000] {forecasting.py:84} INFO - Forecast for product 25891102: 1527 units (MAPE: 62.3%)
+[2025-10-08T18:48:05.805+0000] {filesystem.py:118} DEBUG - input tempfile: /tmp/tmp8f5jweb9/yncgjs_4.json
+[2025-10-08T18:48:05.851+0000] {filesystem.py:118} DEBUG - input tempfile: /tmp/tmp8f5jweb9/x6edlgc8.json
+[2025-10-08T18:48:05.858+0000] {model.py:2042} DEBUG - idx 0
+[2025-10-08T18:48:05.865+0000] {model.py:2043} DEBUG - running CmdStan, num_threads: None
+[2025-10-08T18:48:05.872+0000] {model.py:2055} DEBUG - CmdStan args: ['/home/***/.local/lib/python3.12/site-packages/prophet/stan_model/prophet_model.bin', 'random', 'seed=28144', 'data', 'file=/tmp/tmp8f5jweb9/yncgjs_4.json', 'init=/tmp/tmp8f5jweb9/x6edlgc8.json', 'output', 'file=/tmp/tmp8f5jweb9/prophet_modelwdvldjbf/prophet_model-20251008184805.csv', 'method=optimize', 'algorithm=lbfgs', 'iter=10000']
+[2025-10-08T18:48:05.881+0000] {logging_mixin.py:188} WARNING - 18:48:05 - cmdstanpy - INFO - Chain [1] start processing
+[2025-10-08T18:48:05.880+0000] {model.py:2058} INFO - Chain [1] start processing
+[2025-10-08T18:48:05.932+0000] {logging_mixin.py:188} WARNING - 18:48:05 - cmdstanpy - INFO - Chain [1] done processing
+[2025-10-08T18:48:05.932+0000] {model.py:2115} INFO - Chain [1] done processing
+[2025-10-08T18:48:06.080+0000] {forecasting.py:68} WARNING - High MAPE (100.0%) for product 25891103 — forecast may be unreliable
+[2025-10-08T18:48:06.262+0000] {_client.py:1025} INFO - HTTP Request: POST https://ytuiqgrpbwdxrmbzssrb.supabase.co/rest/v1/policy_recommendations "HTTP/2 201 Created"
+[2025-10-08T18:48:06.265+0000] {forecasting.py:84} INFO - Forecast for product 25891103: 42 units (MAPE: 100.0%)
+[2025-10-08T18:48:06.306+0000] {filesystem.py:118} DEBUG - input tempfile: /tmp/tmp8f5jweb9/djmpd7jw.json
+[2025-10-08T18:48:06.337+0000] {filesystem.py:118} DEBUG - input tempfile: /tmp/tmp8f5jweb9/p91v16jr.json
+[2025-10-08T18:48:06.343+0000] {model.py:2042} DEBUG - idx 0
+[2025-10-08T18:48:06.344+0000] {model.py:2043} DEBUG - running CmdStan, num_threads: None
+[2025-10-08T18:48:06.345+0000] {model.py:2055} DEBUG - CmdStan args: ['/home/***/.local/lib/python3.12/site-packages/prophet/stan_model/prophet_model.bin', 'random', 'seed=30338', 'data', 'file=/tmp/tmp8f5jweb9/djmpd7jw.json', 'init=/tmp/tmp8f5jweb9/p91v16jr.json', 'output', 'file=/tmp/tmp8f5jweb9/prophet_modeltzptewrj/prophet_model-20251008184806.csv', 'method=optimize', 'algorithm=lbfgs', 'iter=10000']
+[2025-10-08T18:48:06.347+0000] {logging_mixin.py:188} WARNING - 18:48:06 - cmdstanpy - INFO - Chain [1] start processing
+[2025-10-08T18:48:06.347+0000] {model.py:2058} INFO - Chain [1] start processing
+[2025-10-08T18:48:06.389+0000] {logging_mixin.py:188} WARNING - 18:48:06 - cmdstanpy - INFO - Chain [1] done processing
+[2025-10-08T18:48:06.389+0000] {model.py:2115} INFO - Chain [1] done processing
+[2025-10-08T18:48:06.536+0000] {forecasting.py:68} WARNING - High MAPE (100.0%) for product 25891201 — forecast may be unreliable
+[2025-10-08T18:48:06.740+0000] {_client.py:1025} INFO - HTTP Request: POST https://ytuiqgrpbwdxrmbzssrb.supabase.co/rest/v1/policy_recommendations "HTTP/2 201 Created"
+[2025-10-08T18:48:06.743+0000] {forecasting.py:84} INFO - Forecast for product 25891201: 22 units (MAPE: 100.0%)
+[2025-10-08T18:48:06.785+0000] {filesystem.py:118} DEBUG - input tempfile: /tmp/tmp8f5jweb9/xzztss34.json
+[2025-10-08T18:48:06.806+0000] {filesystem.py:118} DEBUG - input tempfile: /tmp/tmp8f5jweb9/6t7aupu8.json
+[2025-10-08T18:48:06.809+0000] {model.py:2042} DEBUG - idx 0
+[2025-10-08T18:48:06.811+0000] {model.py:2043} DEBUG - running CmdStan, num_threads: None
+[2025-10-08T18:48:06.812+0000] {model.py:2055} DEBUG - CmdStan args: ['/home/***/.local/lib/python3.12/site-packages/prophet/stan_model/prophet_model.bin', 'random', 'seed=38129', 'data', 'file=/tmp/tmp8f5jweb9/xzztss34.json', 'init=/tmp/tmp8f5jweb9/6t7aupu8.json', 'output', 'file=/tmp/tmp8f5jweb9/prophet_modelbfpqeho9/prophet_model-20251008184806.csv', 'method=optimize', 'algorithm=lbfgs', 'iter=10000']
+[2025-10-08T18:48:06.814+0000] {logging_mixin.py:188} WARNING - 18:48:06 - cmdstanpy - INFO - Chain [1] start processing
+[2025-10-08T18:48:06.813+0000] {model.py:2058} INFO - Chain [1] start processing
+[2025-10-08T18:48:06.835+0000] {logging_mixin.py:188} WARNING - 18:48:06 - cmdstanpy - INFO - Chain [1] done processing
+[2025-10-08T18:48:06.834+0000] {model.py:2115} INFO - Chain [1] done processing
+[2025-10-08T18:48:07.137+0000] {_client.py:1025} INFO - HTTP Request: POST https://ytuiqgrpbwdxrmbzssrb.supabase.co/rest/v1/policy_recommendations "HTTP/2 201 Created"
+[2025-10-08T18:48:07.139+0000] {forecasting.py:84} INFO - Forecast for product 25891202: 1249 units (MAPE: 38.8%)
+[2025-10-08T18:48:07.175+0000] {filesystem.py:118} DEBUG - input tempfile: /tmp/tmp8f5jweb9/8n4c8yr6.json
+[2025-10-08T18:48:07.207+0000] {filesystem.py:118} DEBUG - input tempfile: /tmp/tmp8f5jweb9/3y3wk_ap.json
+[2025-10-08T18:48:07.212+0000] {model.py:2042} DEBUG - idx 0
+[2025-10-08T18:48:07.213+0000] {model.py:2043} DEBUG - running CmdStan, num_threads: None
+[2025-10-08T18:48:07.225+0000] {model.py:2055} DEBUG - CmdStan args: ['/home/***/.local/lib/python3.12/site-packages/prophet/stan_model/prophet_model.bin', 'random', 'seed=74476', 'data', 'file=/tmp/tmp8f5jweb9/8n4c8yr6.json', 'init=/tmp/tmp8f5jweb9/3y3wk_ap.json', 'output', 'file=/tmp/tmp8f5jweb9/prophet_model9nxc8r7k/prophet_model-20251008184807.csv', 'method=optimize', 'algorithm=lbfgs', 'iter=10000']
+[2025-10-08T18:48:07.239+0000] {logging_mixin.py:188} WARNING - 18:48:07 - cmdstanpy - INFO - Chain [1] start processing
+[2025-10-08T18:48:07.239+0000] {model.py:2058} INFO - Chain [1] start processing
+[2025-10-08T18:48:07.291+0000] {logging_mixin.py:188} WARNING - 18:48:07 - cmdstanpy - INFO - Chain [1] done processing
+[2025-10-08T18:48:07.291+0000] {model.py:2115} INFO - Chain [1] done processing
+[2025-10-08T18:48:07.667+0000] {_client.py:1025} INFO - HTTP Request: POST https://ytuiqgrpbwdxrmbzssrb.supabase.co/rest/v1/policy_recommendations "HTTP/2 201 Created"
+[2025-10-08T18:48:07.670+0000] {forecasting.py:84} INFO - Forecast for product 25891203: 828 units (MAPE: 6.4%)
+[2025-10-08T18:48:07.718+0000] {filesystem.py:118} DEBUG - input tempfile: /tmp/tmp8f5jweb9/mb1sv7di.json
+[2025-10-08T18:48:07.743+0000] {filesystem.py:118} DEBUG - input tempfile: /tmp/tmp8f5jweb9/iw8_5bc3.json
+[2025-10-08T18:48:07.748+0000] {model.py:2042} DEBUG - idx 0
+[2025-10-08T18:48:07.749+0000] {model.py:2043} DEBUG - running CmdStan, num_threads: None
+[2025-10-08T18:48:07.750+0000] {model.py:2055} DEBUG - CmdStan args: ['/home/***/.local/lib/python3.12/site-packages/prophet/stan_model/prophet_model.bin', 'random', 'seed=11461', 'data', 'file=/tmp/tmp8f5jweb9/mb1sv7di.json', 'init=/tmp/tmp8f5jweb9/iw8_5bc3.json', 'output', 'file=/tmp/tmp8f5jweb9/prophet_modelbpm_4jkm/prophet_model-20251008184807.csv', 'method=optimize', 'algorithm=lbfgs', 'iter=10000']
+[2025-10-08T18:48:07.752+0000] {logging_mixin.py:188} WARNING - 18:48:07 - cmdstanpy - INFO - Chain [1] start processing
+[2025-10-08T18:48:07.752+0000] {model.py:2058} INFO - Chain [1] start processing
+[2025-10-08T18:48:07.793+0000] {logging_mixin.py:188} WARNING - 18:48:07 - cmdstanpy - INFO - Chain [1] done processing
+[2025-10-08T18:48:07.792+0000] {model.py:2115} INFO - Chain [1] done processing
+[2025-10-08T18:48:07.919+0000] {forecasting.py:68} WARNING - High MAPE (51.6%) for product 25891301 — forecast may be unreliable
+[2025-10-08T18:48:08.096+0000] {_client.py:1025} INFO - HTTP Request: POST https://ytuiqgrpbwdxrmbzssrb.supabase.co/rest/v1/policy_recommendations "HTTP/2 201 Created"
+[2025-10-08T18:48:08.099+0000] {forecasting.py:84} INFO - Forecast for product 25891301: 264 units (MAPE: 51.6%)
+[2025-10-08T18:48:08.141+0000] {filesystem.py:118} DEBUG - input tempfile: /tmp/tmp8f5jweb9/ry15u2xu.json
+[2025-10-08T18:48:08.164+0000] {filesystem.py:118} DEBUG - input tempfile: /tmp/tmp8f5jweb9/v4dpp6q4.json
+[2025-10-08T18:48:08.170+0000] {model.py:2042} DEBUG - idx 0
+[2025-10-08T18:48:08.171+0000] {model.py:2043} DEBUG - running CmdStan, num_threads: None
+[2025-10-08T18:48:08.173+0000] {model.py:2055} DEBUG - CmdStan args: ['/home/***/.local/lib/python3.12/site-packages/prophet/stan_model/prophet_model.bin', 'random', 'seed=30894', 'data', 'file=/tmp/tmp8f5jweb9/ry15u2xu.json', 'init=/tmp/tmp8f5jweb9/v4dpp6q4.json', 'output', 'file=/tmp/tmp8f5jweb9/prophet_modelu4qp53hl/prophet_model-20251008184808.csv', 'method=optimize', 'algorithm=lbfgs', 'iter=10000']
+[2025-10-08T18:48:08.174+0000] {logging_mixin.py:188} WARNING - 18:48:08 - cmdstanpy - INFO - Chain [1] start processing
+[2025-10-08T18:48:08.174+0000] {model.py:2058} INFO - Chain [1] start processing
+[2025-10-08T18:48:08.199+0000] {logging_mixin.py:188} WARNING - 18:48:08 - cmdstanpy - INFO - Chain [1] done processing
+[2025-10-08T18:48:08.199+0000] {model.py:2115} INFO - Chain [1] done processing
+[2025-10-08T18:48:08.328+0000] {forecasting.py:68} WARNING - High MAPE (90.0%) for product 25891302 — forecast may be unreliable
+[2025-10-08T18:48:08.507+0000] {_client.py:1025} INFO - HTTP Request: POST https://ytuiqgrpbwdxrmbzssrb.supabase.co/rest/v1/policy_recommendations "HTTP/2 201 Created"
+[2025-10-08T18:48:08.510+0000] {forecasting.py:84} INFO - Forecast for product 25891302: 32 units (MAPE: 90.0%)
+[2025-10-08T18:48:08.559+0000] {filesystem.py:118} DEBUG - input tempfile: /tmp/tmp8f5jweb9/2jt3ld__.json
+[2025-10-08T18:48:08.583+0000] {filesystem.py:118} DEBUG - input tempfile: /tmp/tmp8f5jweb9/t1xjnkma.json
+[2025-10-08T18:48:08.587+0000] {model.py:2042} DEBUG - idx 0
+[2025-10-08T18:48:08.589+0000] {model.py:2043} DEBUG - running CmdStan, num_threads: None
+[2025-10-08T18:48:08.590+0000] {model.py:2055} DEBUG - CmdStan args: ['/home/***/.local/lib/python3.12/site-packages/prophet/stan_model/prophet_model.bin', 'random', 'seed=33855', 'data', 'file=/tmp/tmp8f5jweb9/2jt3ld__.json', 'init=/tmp/tmp8f5jweb9/t1xjnkma.json', 'output', 'file=/tmp/tmp8f5jweb9/prophet_modelgtrbl66c/prophet_model-20251008184808.csv', 'method=optimize', 'algorithm=lbfgs', 'iter=10000']
+[2025-10-08T18:48:08.591+0000] {logging_mixin.py:188} WARNING - 18:48:08 - cmdstanpy - INFO - Chain [1] start processing
+[2025-10-08T18:48:08.591+0000] {model.py:2058} INFO - Chain [1] start processing
+[2025-10-08T18:48:08.614+0000] {logging_mixin.py:188} WARNING - 18:48:08 - cmdstanpy - INFO - Chain [1] done processing
+[2025-10-08T18:48:08.614+0000] {model.py:2115} INFO - Chain [1] done processing
+[2025-10-08T18:48:08.792+0000] {forecasting.py:68} WARNING - High MAPE (100.0%) for product 25891303 — forecast may be unreliable
+[2025-10-08T18:48:09.038+0000] {_client.py:1025} INFO - HTTP Request: POST https://ytuiqgrpbwdxrmbzssrb.supabase.co/rest/v1/policy_recommendations "HTTP/2 201 Created"
+[2025-10-08T18:48:09.041+0000] {forecasting.py:84} INFO - Forecast for product 25891303: 13 units (MAPE: 100.0%)
+[2025-10-08T18:48:09.093+0000] {filesystem.py:118} DEBUG - input tempfile: /tmp/tmp8f5jweb9/b9xmmfvj.json
+[2025-10-08T18:48:09.110+0000] {filesystem.py:118} DEBUG - input tempfile: /tmp/tmp8f5jweb9/mrrw4yh3.json
+[2025-10-08T18:48:09.114+0000] {model.py:2042} DEBUG - idx 0
+[2025-10-08T18:48:09.116+0000] {model.py:2043} DEBUG - running CmdStan, num_threads: None
+[2025-10-08T18:48:09.117+0000] {model.py:2055} DEBUG - CmdStan args: ['/home/***/.local/lib/python3.12/site-packages/prophet/stan_model/prophet_model.bin', 'random', 'seed=81176', 'data', 'file=/tmp/tmp8f5jweb9/b9xmmfvj.json', 'init=/tmp/tmp8f5jweb9/mrrw4yh3.json', 'output', 'file=/tmp/tmp8f5jweb9/prophet_modeldosfutjw/prophet_model-20251008184809.csv', 'method=optimize', 'algorithm=lbfgs', 'iter=10000']
+[2025-10-08T18:48:09.119+0000] {logging_mixin.py:188} WARNING - 18:48:09 - cmdstanpy - INFO - Chain [1] start processing
+[2025-10-08T18:48:09.119+0000] {model.py:2058} INFO - Chain [1] start processing
+[2025-10-08T18:48:09.140+0000] {logging_mixin.py:188} WARNING - 18:48:09 - cmdstanpy - INFO - Chain [1] done processing
+[2025-10-08T18:48:09.140+0000] {model.py:2115} INFO - Chain [1] done processing
+[2025-10-08T18:48:09.279+0000] {forecasting.py:68} WARNING - High MAPE (298.5%) for product 25891401 — forecast may be unreliable
+[2025-10-08T18:48:09.460+0000] {_client.py:1025} INFO - HTTP Request: POST https://ytuiqgrpbwdxrmbzssrb.supabase.co/rest/v1/policy_recommendations "HTTP/2 201 Created"
+[2025-10-08T18:48:09.463+0000] {forecasting.py:84} INFO - Forecast for product 25891401: 1704 units (MAPE: 298.5%)
+[2025-10-08T18:48:09.560+0000] {filesystem.py:118} DEBUG - input tempfile: /tmp/tmp8f5jweb9/5_1uxx55.json
+[2025-10-08T18:48:09.585+0000] {filesystem.py:118} DEBUG - input tempfile: /tmp/tmp8f5jweb9/zg7xlyap.json
+[2025-10-08T18:48:09.590+0000] {model.py:2042} DEBUG - idx 0
+[2025-10-08T18:48:09.591+0000] {model.py:2043} DEBUG - running CmdStan, num_threads: None
+[2025-10-08T18:48:09.593+0000] {model.py:2055} DEBUG - CmdStan args: ['/home/***/.local/lib/python3.12/site-packages/prophet/stan_model/prophet_model.bin', 'random', 'seed=2189', 'data', 'file=/tmp/tmp8f5jweb9/5_1uxx55.json', 'init=/tmp/tmp8f5jweb9/zg7xlyap.json', 'output', 'file=/tmp/tmp8f5jweb9/prophet_modelw79vj4vt/prophet_model-20251008184809.csv', 'method=optimize', 'algorithm=lbfgs', 'iter=10000']
+[2025-10-08T18:48:09.595+0000] {logging_mixin.py:188} WARNING - 18:48:09 - cmdstanpy - INFO - Chain [1] start processing
+[2025-10-08T18:48:09.594+0000] {model.py:2058} INFO - Chain [1] start processing
+[2025-10-08T18:48:09.634+0000] {logging_mixin.py:188} WARNING - 18:48:09 - cmdstanpy - INFO - Chain [1] done processing
+[2025-10-08T18:48:09.634+0000] {model.py:2115} INFO - Chain [1] done processing
+[2025-10-08T18:48:09.787+0000] {forecasting.py:68} WARNING - High MAPE (315.4%) for product 25891402 — forecast may be unreliable
+[2025-10-08T18:48:09.985+0000] {_client.py:1025} INFO - HTTP Request: POST https://ytuiqgrpbwdxrmbzssrb.supabase.co/rest/v1/policy_recommendations "HTTP/2 201 Created"
+[2025-10-08T18:48:09.987+0000] {forecasting.py:84} INFO - Forecast for product 25891402: 2526 units (MAPE: 315.4%)
+[2025-10-08T18:48:10.019+0000] {filesystem.py:118} DEBUG - input tempfile: /tmp/tmp8f5jweb9/_2053ap7.json
+[2025-10-08T18:48:10.038+0000] {filesystem.py:118} DEBUG - input tempfile: /tmp/tmp8f5jweb9/mg6ssi96.json
+[2025-10-08T18:48:10.042+0000] {model.py:2042} DEBUG - idx 0
+[2025-10-08T18:48:10.044+0000] {model.py:2043} DEBUG - running CmdStan, num_threads: None
+[2025-10-08T18:48:10.046+0000] {model.py:2055} DEBUG - CmdStan args: ['/home/***/.local/lib/python3.12/site-packages/prophet/stan_model/prophet_model.bin', 'random', 'seed=564', 'data', 'file=/tmp/tmp8f5jweb9/_2053ap7.json', 'init=/tmp/tmp8f5jweb9/mg6ssi96.json', 'output', 'file=/tmp/tmp8f5jweb9/prophet_modelwsmu8z33/prophet_model-20251008184810.csv', 'method=optimize', 'algorithm=lbfgs', 'iter=10000']
+[2025-10-08T18:48:10.047+0000] {logging_mixin.py:188} WARNING - 18:48:10 - cmdstanpy - INFO - Chain [1] start processing
+[2025-10-08T18:48:10.047+0000] {model.py:2058} INFO - Chain [1] start processing
+[2025-10-08T18:48:10.070+0000] {logging_mixin.py:188} WARNING - 18:48:10 - cmdstanpy - INFO - Chain [1] done processing
+[2025-10-08T18:48:10.070+0000] {model.py:2115} INFO - Chain [1] done processing
+[2025-10-08T18:48:10.214+0000] {forecasting.py:68} WARNING - High MAPE (100.0%) for product 25891403 — forecast may be unreliable
+[2025-10-08T18:48:10.441+0000] {_client.py:1025} INFO - HTTP Request: POST https://ytuiqgrpbwdxrmbzssrb.supabase.co/rest/v1/policy_recommendations "HTTP/2 201 Created"
+[2025-10-08T18:48:10.443+0000] {forecasting.py:84} INFO - Forecast for product 25891403: 56 units (MAPE: 100.0%)
+[2025-10-08T18:48:10.478+0000] {filesystem.py:118} DEBUG - input tempfile: /tmp/tmp8f5jweb9/l18jkhlx.json
+[2025-10-08T18:48:10.497+0000] {filesystem.py:118} DEBUG - input tempfile: /tmp/tmp8f5jweb9/ur_1re0h.json
+[2025-10-08T18:48:10.501+0000] {model.py:2042} DEBUG - idx 0
+[2025-10-08T18:48:10.503+0000] {model.py:2043} DEBUG - running CmdStan, num_threads: None
+[2025-10-08T18:48:10.504+0000] {model.py:2055} DEBUG - CmdStan args: ['/home/***/.local/lib/python3.12/site-packages/prophet/stan_model/prophet_model.bin', 'random', 'seed=17470', 'data', 'file=/tmp/tmp8f5jweb9/l18jkhlx.json', 'init=/tmp/tmp8f5jweb9/ur_1re0h.json', 'output', 'file=/tmp/tmp8f5jweb9/prophet_modeler39t124/prophet_model-20251008184810.csv', 'method=optimize', 'algorithm=lbfgs', 'iter=10000']
+[2025-10-08T18:48:10.506+0000] {logging_mixin.py:188} WARNING - 18:48:10 - cmdstanpy - INFO - Chain [1] start processing
+[2025-10-08T18:48:10.506+0000] {model.py:2058} INFO - Chain [1] start processing
+[2025-10-08T18:48:10.527+0000] {logging_mixin.py:188} WARNING - 18:48:10 - cmdstanpy - INFO - Chain [1] done processing
+[2025-10-08T18:48:10.526+0000] {model.py:2115} INFO - Chain [1] done processing
+[2025-10-08T18:48:10.642+0000] {forecasting.py:68} WARNING - High MAPE (189.5%) for product 25891501 — forecast may be unreliable
+[2025-10-08T18:48:10.817+0000] {_client.py:1025} INFO - HTTP Request: POST https://ytuiqgrpbwdxrmbzssrb.supabase.co/rest/v1/policy_recommendations "HTTP/2 201 Created"
+[2025-10-08T18:48:10.819+0000] {forecasting.py:84} INFO - Forecast for product 25891501: 644 units (MAPE: 189.5%)
+[2025-10-08T18:48:10.861+0000] {filesystem.py:118} DEBUG - input tempfile: /tmp/tmp8f5jweb9/umvtcfha.json
+[2025-10-08T18:48:10.882+0000] {filesystem.py:118} DEBUG - input tempfile: /tmp/tmp8f5jweb9/0cuiuvd9.json
+[2025-10-08T18:48:10.886+0000] {model.py:2042} DEBUG - idx 0
+[2025-10-08T18:48:10.887+0000] {model.py:2043} DEBUG - running CmdStan, num_threads: None
+[2025-10-08T18:48:10.889+0000] {model.py:2055} DEBUG - CmdStan args: ['/home/***/.local/lib/python3.12/site-packages/prophet/stan_model/prophet_model.bin', 'random', 'seed=24577', 'data', 'file=/tmp/tmp8f5jweb9/umvtcfha.json', 'init=/tmp/tmp8f5jweb9/0cuiuvd9.json', 'output', 'file=/tmp/tmp8f5jweb9/prophet_modelhgyijox7/prophet_model-20251008184810.csv', 'method=optimize', 'algorithm=lbfgs', 'iter=10000']
+[2025-10-08T18:48:10.891+0000] {logging_mixin.py:188} WARNING - 18:48:10 - cmdstanpy - INFO - Chain [1] start processing
+[2025-10-08T18:48:10.890+0000] {model.py:2058} INFO - Chain [1] start processing
+[2025-10-08T18:48:10.916+0000] {logging_mixin.py:188} WARNING - 18:48:10 - cmdstanpy - INFO - Chain [1] done processing
+[2025-10-08T18:48:10.916+0000] {model.py:2115} INFO - Chain [1] done processing
+[2025-10-08T18:48:11.057+0000] {forecasting.py:68} WARNING - High MAPE (100.0%) for product 25891502 — forecast may be unreliable
+[2025-10-08T18:48:11.228+0000] {_client.py:1025} INFO - HTTP Request: POST https://ytuiqgrpbwdxrmbzssrb.supabase.co/rest/v1/policy_recommendations "HTTP/2 201 Created"
+[2025-10-08T18:48:11.231+0000] {forecasting.py:84} INFO - Forecast for product 25891502: 26 units (MAPE: 100.0%)
+[2025-10-08T18:48:11.282+0000] {filesystem.py:118} DEBUG - input tempfile: /tmp/tmp8f5jweb9/skzdsf3n.json
+[2025-10-08T18:48:11.309+0000] {filesystem.py:118} DEBUG - input tempfile: /tmp/tmp8f5jweb9/gjiow0p6.json
+[2025-10-08T18:48:11.314+0000] {model.py:2042} DEBUG - idx 0
+[2025-10-08T18:48:11.315+0000] {model.py:2043} DEBUG - running CmdStan, num_threads: None
+[2025-10-08T18:48:11.317+0000] {model.py:2055} DEBUG - CmdStan args: ['/home/***/.local/lib/python3.12/site-packages/prophet/stan_model/prophet_model.bin', 'random', 'seed=77244', 'data', 'file=/tmp/tmp8f5jweb9/skzdsf3n.json', 'init=/tmp/tmp8f5jweb9/gjiow0p6.json', 'output', 'file=/tmp/tmp8f5jweb9/prophet_modelfod8t6n9/prophet_model-20251008184811.csv', 'method=optimize', 'algorithm=lbfgs', 'iter=10000']
+[2025-10-08T18:48:11.319+0000] {logging_mixin.py:188} WARNING - 18:48:11 - cmdstanpy - INFO - Chain [1] start processing
+[2025-10-08T18:48:11.318+0000] {model.py:2058} INFO - Chain [1] start processing
+[2025-10-08T18:48:11.350+0000] {logging_mixin.py:188} WARNING - 18:48:11 - cmdstanpy - INFO - Chain [1] done processing
+[2025-10-08T18:48:11.350+0000] {model.py:2115} INFO - Chain [1] done processing
+[2025-10-08T18:48:11.678+0000] {_client.py:1025} INFO - HTTP Request: POST https://ytuiqgrpbwdxrmbzssrb.supabase.co/rest/v1/policy_recommendations "HTTP/2 201 Created"
+[2025-10-08T18:48:11.694+0000] {forecasting.py:84} INFO - Forecast for product 25891503: 318 units (MAPE: 23.6%)
+[2025-10-08T18:48:11.794+0000] {filesystem.py:118} DEBUG - input tempfile: /tmp/tmp8f5jweb9/q8q26g8m.json
+[2025-10-08T18:48:11.834+0000] {filesystem.py:118} DEBUG - input tempfile: /tmp/tmp8f5jweb9/xwxmwwpk.json
+[2025-10-08T18:48:11.861+0000] {model.py:2042} DEBUG - idx 0
+[2025-10-08T18:48:11.867+0000] {model.py:2043} DEBUG - running CmdStan, num_threads: None
+[2025-10-08T18:48:11.878+0000] {model.py:2055} DEBUG - CmdStan args: ['/home/***/.local/lib/python3.12/site-packages/prophet/stan_model/prophet_model.bin', 'random', 'seed=13298', 'data', 'file=/tmp/tmp8f5jweb9/q8q26g8m.json', 'init=/tmp/tmp8f5jweb9/xwxmwwpk.json', 'output', 'file=/tmp/tmp8f5jweb9/prophet_modeltaajkinf/prophet_model-20251008184811.csv', 'method=optimize', 'algorithm=lbfgs', 'iter=10000']
+[2025-10-08T18:48:11.886+0000] {logging_mixin.py:188} WARNING - 18:48:11 - cmdstanpy - INFO - Chain [1] start processing
+[2025-10-08T18:48:11.885+0000] {model.py:2058} INFO - Chain [1] start processing
+[2025-10-08T18:48:11.920+0000] {logging_mixin.py:188} WARNING - 18:48:11 - cmdstanpy - INFO - Chain [1] done processing
+[2025-10-08T18:48:11.920+0000] {model.py:2115} INFO - Chain [1] done processing
+[2025-10-08T18:48:12.227+0000] {_client.py:1025} INFO - HTTP Request: POST https://ytuiqgrpbwdxrmbzssrb.supabase.co/rest/v1/policy_recommendations "HTTP/2 201 Created"
+[2025-10-08T18:48:12.230+0000] {forecasting.py:84} INFO - Forecast for product 25891601: 326 units (MAPE: 33.4%)
+[2025-10-08T18:48:12.286+0000] {filesystem.py:118} DEBUG - input tempfile: /tmp/tmp8f5jweb9/ylyt8ths.json
+[2025-10-08T18:48:12.304+0000] {filesystem.py:118} DEBUG - input tempfile: /tmp/tmp8f5jweb9/vsqqjwa5.json
+[2025-10-08T18:48:12.307+0000] {model.py:2042} DEBUG - idx 0
+[2025-10-08T18:48:12.309+0000] {model.py:2043} DEBUG - running CmdStan, num_threads: None
+[2025-10-08T18:48:12.310+0000] {model.py:2055} DEBUG - CmdStan args: ['/home/***/.local/lib/python3.12/site-packages/prophet/stan_model/prophet_model.bin', 'random', 'seed=95219', 'data', 'file=/tmp/tmp8f5jweb9/ylyt8ths.json', 'init=/tmp/tmp8f5jweb9/vsqqjwa5.json', 'output', 'file=/tmp/tmp8f5jweb9/prophet_model3bb1kubq/prophet_model-20251008184812.csv', 'method=optimize', 'algorithm=lbfgs', 'iter=10000']
+[2025-10-08T18:48:12.312+0000] {logging_mixin.py:188} WARNING - 18:48:12 - cmdstanpy - INFO - Chain [1] start processing
+[2025-10-08T18:48:12.312+0000] {model.py:2058} INFO - Chain [1] start processing
+[2025-10-08T18:48:12.334+0000] {logging_mixin.py:188} WARNING - 18:48:12 - cmdstanpy - INFO - Chain [1] done processing
+[2025-10-08T18:48:12.334+0000] {model.py:2115} INFO - Chain [1] done processing
+[2025-10-08T18:48:12.461+0000] {forecasting.py:68} WARNING - High MAPE (93.0%) for product 25891602 — forecast may be unreliable
+[2025-10-08T18:48:12.746+0000] {_client.py:1025} INFO - HTTP Request: POST https://ytuiqgrpbwdxrmbzssrb.supabase.co/rest/v1/policy_recommendations "HTTP/2 201 Created"
+[2025-10-08T18:48:12.749+0000] {forecasting.py:84} INFO - Forecast for product 25891602: 122 units (MAPE: 93.0%)
+[2025-10-08T18:48:12.792+0000] {filesystem.py:118} DEBUG - input tempfile: /tmp/tmp8f5jweb9/hcohj9qa.json
+[2025-10-08T18:48:12.811+0000] {filesystem.py:118} DEBUG - input tempfile: /tmp/tmp8f5jweb9/xbjdtiyf.json
+[2025-10-08T18:48:12.814+0000] {model.py:2042} DEBUG - idx 0
+[2025-10-08T18:48:12.816+0000] {model.py:2043} DEBUG - running CmdStan, num_threads: None
+[2025-10-08T18:48:12.817+0000] {model.py:2055} DEBUG - CmdStan args: ['/home/***/.local/lib/python3.12/site-packages/prophet/stan_model/prophet_model.bin', 'random', 'seed=39241', 'data', 'file=/tmp/tmp8f5jweb9/hcohj9qa.json', 'init=/tmp/tmp8f5jweb9/xbjdtiyf.json', 'output', 'file=/tmp/tmp8f5jweb9/prophet_model8bp3owzc/prophet_model-20251008184812.csv', 'method=optimize', 'algorithm=lbfgs', 'iter=10000']
+[2025-10-08T18:48:12.819+0000] {logging_mixin.py:188} WARNING - 18:48:12 - cmdstanpy - INFO - Chain [1] start processing
+[2025-10-08T18:48:12.819+0000] {model.py:2058} INFO - Chain [1] start processing
+[2025-10-08T18:48:12.842+0000] {logging_mixin.py:188} WARNING - 18:48:12 - cmdstanpy - INFO - Chain [1] done processing
+[2025-10-08T18:48:12.841+0000] {model.py:2115} INFO - Chain [1] done processing
+[2025-10-08T18:48:12.974+0000] {forecasting.py:68} WARNING - High MAPE (94.4%) for product 25891603 — forecast may be unreliable
+[2025-10-08T18:48:13.147+0000] {_client.py:1025} INFO - HTTP Request: POST https://ytuiqgrpbwdxrmbzssrb.supabase.co/rest/v1/policy_recommendations "HTTP/2 201 Created"
+[2025-10-08T18:48:13.149+0000] {forecasting.py:84} INFO - Forecast for product 25891603: 235 units (MAPE: 94.4%)
+[2025-10-08T18:48:13.151+0000] {forecasting.py:91} INFO - Forecasting complete (18 products)
+[2025-10-08T18:48:13.153+0000] {pipeline.py:26} INFO - Forecasting complete (18 products)
+[2025-10-08T18:48:13.154+0000] {pipeline.py:28} INFO - Generating policy recommendations
+[2025-10-08T18:48:13.155+0000] {pipeline.py:30} INFO - Pipeline completed successfully
+[2025-10-08T18:48:13.157+0000] {python.py:237} INFO - Done. Returned value was: {'kpi_count': 35, 'forecast_count': 18}
+[2025-10-08T18:48:13.158+0000] {taskinstance.py:441} INFO - ::group::Post task execution logs
+[2025-10-08T18:48:13.235+0000] {taskinstance.py:1206} INFO - Marking task as SUCCESS. dag_id=supplychain_pipeline_dag, task_id=analytics_alerts_group.analytics, run_id=scheduled__2025-10-08T18:00:00+00:00, execution_date=20251008T180000, start_date=20251008T184801, end_date=20251008T184813
+[2025-10-08T18:48:13.398+0000] {local_task_job_runner.py:240} INFO - Task exited with return code 0
+[2025-10-08T18:48:13.455+0000] {taskinstance.py:3503} INFO - 1 downstream tasks scheduled from follow-on schedule check
+[2025-10-08T18:48:13.459+0000] {local_task_job_runner.py:222} INFO - ::endgroup::

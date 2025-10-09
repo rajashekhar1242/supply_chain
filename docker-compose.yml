@@ -1,0 +1,100 @@
+
+
+services:
+  postgres:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: airflow
+      POSTGRES_PASSWORD: airflow
+      POSTGRES_DB: airflow
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U airflow"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  airflow-webserver:
+    build: .
+    image: supplychain-airflow:latest
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      AIRFLOW__CORE__EXECUTOR: LocalExecutor
+      AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@postgres:5432/airflow
+      AIRFLOW__CORE__LOAD_EXAMPLES: "False"
+      AIRFLOW__API__AUTH_BACKENDS: airflow.api.auth.backend.basic_auth
+      AIRFLOW__CORE__FERNET_KEY: ${AIRFLOW__CORE__FERNET_KEY}
+      AIRFLOW_UID: 50000
+      PYTHONPATH: /opt/airflow
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./analytics:/opt/airflow/analytics
+      - ./ingestion:/opt/airflow/ingestion
+      - ./alerts:/opt/airflow/alerts
+      - ./dags:/opt/airflow/dags
+      - ./logs:/opt/airflow/logs
+      - ./.env:/opt/airflow/.env
+    command: webserver
+    restart: always
+
+  airflow-scheduler:
+    build: .
+    image: supplychain-airflow:latest
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      AIRFLOW__CORE__EXECUTOR: LocalExecutor
+      AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@postgres:5432/airflow
+      AIRFLOW__CORE__LOAD_EXAMPLES: "False"
+      AIRFLOW__CORE__FERNET_KEY: ${AIRFLOW__CORE__FERNET_KEY}
+      AIRFLOW_UID: 50000
+      PYTHONPATH: /opt/airflow
+    volumes:
+      - ./analytics:/opt/airflow/analytics
+      - ./ingestion:/opt/airflow/ingestion
+      - ./alerts:/opt/airflow/alerts
+      - ./dags:/opt/airflow/dags
+      - ./logs:/opt/airflow/logs
+      - ./.env:/opt/airflow/.env
+    command: scheduler
+    restart: always
+
+  airflow-init:
+    build: .
+    image: supplychain-airflow:latest
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      AIRFLOW__CORE__EXECUTOR: LocalExecutor
+      AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@postgres:5432/airflow
+      AIRFLOW__CORE__FERNET_KEY: ${AIRFLOW__CORE__FERNET_KEY}
+      AIRFLOW_UID: 50000
+      PYTHONPATH: /opt/airflow
+    entrypoint: /bin/bash
+    command:
+      - -c
+      - |
+        airflow db init &&
+        airflow users create \
+          --username airflow \
+          --firstname Admin \
+          --lastname User \
+          --role Admin \
+          --email admin@example.com \
+          --password airflow
+    volumes:
+      - ./analytics:/opt/airflow/analytics
+      - ./ingestion:/opt/airflow/ingestion
+      - ./alerts:/opt/airflow/alerts
+      - ./dags:/opt/airflow/dags
+      - ./logs:/opt/airflow/logs
+      - ./.env:/opt/airflow/.env
+
+volumes:
+  postgres_data:

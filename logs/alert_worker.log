@@ -1,0 +1,454 @@
+INFO - Chromium init'ed with kwargs {}
+INFO - Found chromium path: C:\Program Files\Google\Chrome\Application\chrome.exe
+INFO - Temp directory created: C:\Users\peral\AppData\Local\Temp\tmpa10gejcw.
+INFO - Opening browser.
+INFO - Temp directory created: C:\Users\peral\AppData\Local\Temp\tmp0fbhcwsd.
+INFO - Temporary directory at: C:\Users\peral\AppData\Local\Temp\tmp0fbhcwsd
+INFO - Conforming 1 to file:///C:/Users/peral/AppData/Local/Temp/tmpa10gejcw/index.html
+INFO - Waiting on all navigates
+INFO - All navigates done, putting them all in queue.
+INFO - Getting tab from queue (has 1)
+INFO - Got 43A2
+INFO - Processing KPI_vs_Target.png
+INFO - Sending big command for KPI_vs_Target.png.
+INFO - Sent big command for KPI_vs_Target.png.
+INFO - Reloading tab 43A2 before return.
+INFO - Putting tab 43A2 back (queue size: 0).
+INFO - Waiting for all cleanups to finish.
+INFO - Exiting Kaleido
+INFO - Closing browser.
+INFO - Closing browser.
+INFO - TemporaryDirectory.cleanup() worked.
+INFO - shutil.rmtree worked.
+INFO - Cancelling tasks.
+INFO - Exiting Kaleido/Choreo
+INFO - TemporaryDirectory.cleanup() worked.
+INFO - shutil.rmtree worked.
+INFO - TemporaryDirectory.cleanup() worked.
+INFO - shutil.rmtree worked.
+INFO - Cancelling tasks.
+INFO - Exiting Kaleido/Choreo
+INFO - TemporaryDirectory.cleanup() worked.
+INFO - shutil.rmtree worked.
+INFO - Chromium init'ed with kwargs {}
+INFO - Found chromium path: C:\Program Files\Google\Chrome\Application\chrome.exe
+INFO - Temp directory created: C:\Users\peral\AppData\Local\Temp\tmpvrfgi_cw.
+INFO - Opening browser.
+INFO - Temp directory created: C:\Users\peral\AppData\Local\Temp\tmp9tuuk5iq.
+INFO - Temporary directory at: C:\Users\peral\AppData\Local\Temp\tmp9tuuk5iq
+INFO - Conforming 1 to file:///C:/Users/peral/AppData/Local/Temp/tmpvrfgi_cw/index.html
+INFO - Waiting on all navigates
+INFO - All navigates done, putting them all in queue.
+INFO - Getting tab from queue (has 1)
+INFO - Got D9C7
+INFO - Processing Inventory_Stock_Levels.png
+INFO - Sending big command for Inventory_Stock_Levels.png.
+INFO - Sent big command for Inventory_Stock_Levels.png.
+INFO - Reloading tab D9C7 before return.
+INFO - Putting tab D9C7 back (queue size: 0).
+INFO - Waiting for all cleanups to finish.
+INFO - Exiting Kaleido
+INFO - Closing browser.
+INFO - Closing browser.
+INFO - TemporaryDirectory.cleanup() worked.
+INFO - shutil.rmtree worked.
+INFO - Cancelling tasks.
+INFO - Exiting Kaleido/Choreo
+INFO - TemporaryDirectory.cleanup() worked.
+INFO - shutil.rmtree worked.
+INFO - TemporaryDirectory.cleanup() worked.
+INFO - shutil.rmtree worked.
+INFO - Cancelling tasks.
+INFO - Exiting Kaleido/Choreo
+INFO - Email sent successfully to peralarajashekhar2004@gmail.com
+INFO - Processed 365 alerts.
+INFO - TemporaryDirectory.cleanup() worked.
+INFO - shutil.rmtree worked.
+INFO - Chromium init'ed with kwargs {}
+INFO - Found chromium path: C:\Program Files\Google\Chrome\Application\chrome.exe
+INFO - Temp directory created: C:\Users\peral\AppData\Local\Temp\tmpve5_o325.
+INFO - Opening browser.
+INFO - Temp directory created: C:\Users\peral\AppData\Local\Temp\tmprcjbm51g.
+INFO - Temporary directory at: C:\Users\peral\AppData\Local\Temp\tmprcjbm51g
+INFO - Conforming 1 to file:///C:/Users/peral/AppData/Local/Temp/tmpve5_o325/index.html
+INFO - Waiting on all navigates
+INFO - All navigates done, putting them all in queue.
+INFO - Getting tab from queue (has 1)
+INFO - Got AEA1
+INFO - Processing KPI_vs_Target.png
+INFO - Sending big command for KPI_vs_Target.png.
+INFO - Sent big command for KPI_vs_Target.png.
+INFO - Reloading tab AEA1 before return.
+INFO - Putting tab AEA1 back (queue size: 0).
+INFO - Waiting for all cleanups to finish.
+INFO - Exiting Kaleido
+INFO - Closing browser.
+INFO - Closing browser.
+INFO - TemporaryDirectory.cleanup() worked.
+INFO - shutil.rmtree worked.
+INFO - Cancelling tasks.
+INFO - Exiting Kaleido/Choreo
+INFO - TemporaryDirectory.cleanup() worked.
+INFO - shutil.rmtree worked.
+INFO - TemporaryDirectory.cleanup() worked.
+INFO - shutil.rmtree worked.
+INFO - Cancelling tasks.
+INFO - Exiting Kaleido/Choreo
+INFO - TemporaryDirectory.cleanup() worked.
+INFO - shutil.rmtree worked.
+INFO - Chromium init'ed with kwargs {}
+INFO - Found chromium path: C:\Program Files\Google\Chrome\Application\chrome.exe
+INFO - Temp directory created: C:\Users\peral\AppData\Local\Temp\tmp9tilwrh6.
+INFO - Opening browser.
+INFO - Temp directory created: C:\Users\peral\AppData\Local\Temp\tmpb6f50o6c.
+INFO - Temporary directory at: C:\Users\peral\AppData\Local\Temp\tmpb6f50o6c
+INFO - Conforming 1 to file:///C:/Users/peral/AppData/Local/Temp/tmp9tilwrh6/index.html
+INFO - Waiting on all navigates
+INFO - All navigates done, putting them all in queue.
+INFO - Getting tab from queue (has 1)
+INFO - Got E789
+INFO - Processing Inventory_Stock_Levels.png
+INFO - Sending big command for Inventory_Stock_Levels.png.
+INFO - Sent big command for Inventory_Stock_Levels.png.
+INFO - Reloading tab E789 before return.
+INFO - Putting tab E789 back (queue size: 0).
+INFO - Waiting for all cleanups to finish.
+INFO - Exiting Kaleido
+INFO - Closing browser.
+INFO - Closing browser.
+INFO - TemporaryDirectory.cleanup() worked.
+INFO - shutil.rmtree worked.
+INFO - Cancelling tasks.
+INFO - Exiting Kaleido/Choreo
+INFO - TemporaryDirectory.cleanup() worked.
+INFO - shutil.rmtree worked.
+INFO - TemporaryDirectory.cleanup() worked.
+INFO - shutil.rmtree worked.
+INFO - Cancelling tasks.
+INFO - Exiting Kaleido/Choreo
+INFO - Email sent successfully to peralarajashekhar2004@gmail.com
+INFO - Processed 365 alerts.
+INFO - TemporaryDirectory.cleanup() worked.
+INFO - shutil.rmtree worked.
+ERROR - KPI graph failed: 
+Image export using the "kaleido" engine requires the Kaleido package,
+which can be installed using pip:
+
+    $ pip install --upgrade kaleido
+
+Traceback (most recent call last):
+  File "/opt/airflow/alerts/alert_worker.py", line 209, in plot_kpi_summary_png
+    img_bytes = fig.to_image(format="png")
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/venvp959uk8p/lib/python3.12/site-packages/plotly/basedatatypes.py", line 3801, in to_image
+    return pio.to_image(self, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/venvp959uk8p/lib/python3.12/site-packages/plotly/io/_kaleido.py", line 345, in to_image
+    raise ValueError(
+ValueError: 
+Image export using the "kaleido" engine requires the Kaleido package,
+which can be installed using pip:
+
+    $ pip install --upgrade kaleido
+
+
+ERROR - Inventory graph failed: 
+Image export using the "kaleido" engine requires the Kaleido package,
+which can be installed using pip:
+
+    $ pip install --upgrade kaleido
+
+Traceback (most recent call last):
+  File "/opt/airflow/alerts/alert_worker.py", line 235, in plot_inventory_png
+    img_bytes = fig.to_image(format="png")
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/venvp959uk8p/lib/python3.12/site-packages/plotly/basedatatypes.py", line 3801, in to_image
+    return pio.to_image(self, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/venvp959uk8p/lib/python3.12/site-packages/plotly/io/_kaleido.py", line 345, in to_image
+    raise ValueError(
+ValueError: 
+Image export using the "kaleido" engine requires the Kaleido package,
+which can be installed using pip:
+
+    $ pip install --upgrade kaleido
+
+
+ERROR - KPI graph failed: 
+Image export using the "kaleido" engine requires the Kaleido package,
+which can be installed using pip:
+
+    $ pip install --upgrade kaleido
+
+Traceback (most recent call last):
+  File "/opt/airflow/alerts/alert_worker.py", line 209, in plot_kpi_summary_png
+    img_bytes = fig.to_image(format="png")
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/venv22ed03ef/lib/python3.12/site-packages/plotly/basedatatypes.py", line 3801, in to_image
+    return pio.to_image(self, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/venv22ed03ef/lib/python3.12/site-packages/plotly/io/_kaleido.py", line 345, in to_image
+    raise ValueError(
+ValueError: 
+Image export using the "kaleido" engine requires the Kaleido package,
+which can be installed using pip:
+
+    $ pip install --upgrade kaleido
+
+
+ERROR - Inventory graph failed: 
+Image export using the "kaleido" engine requires the Kaleido package,
+which can be installed using pip:
+
+    $ pip install --upgrade kaleido
+
+Traceback (most recent call last):
+  File "/opt/airflow/alerts/alert_worker.py", line 235, in plot_inventory_png
+    img_bytes = fig.to_image(format="png")
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/venv22ed03ef/lib/python3.12/site-packages/plotly/basedatatypes.py", line 3801, in to_image
+    return pio.to_image(self, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/venv22ed03ef/lib/python3.12/site-packages/plotly/io/_kaleido.py", line 345, in to_image
+    raise ValueError(
+ValueError: 
+Image export using the "kaleido" engine requires the Kaleido package,
+which can be installed using pip:
+
+    $ pip install --upgrade kaleido
+
+
+INFO - Email sent successfully to peralarajashekhar2004@gmail.com
+INFO - Processed 427 alerts.
+INFO - Email sent successfully to peralarajashekhar2004@gmail.com
+INFO - Processed 427 alerts.
+ERROR - KPI graph failed: 
+Image export using the "kaleido" engine requires the Kaleido package,
+which can be installed using pip:
+
+    $ pip install --upgrade kaleido
+
+Traceback (most recent call last):
+  File "/opt/airflow/alerts/alert_worker.py", line 209, in plot_kpi_summary_png
+    img_bytes = fig.to_image(format="png")
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/venv16cdh563/lib/python3.12/site-packages/plotly/basedatatypes.py", line 3801, in to_image
+    return pio.to_image(self, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/venv16cdh563/lib/python3.12/site-packages/plotly/io/_kaleido.py", line 345, in to_image
+    raise ValueError(
+ValueError: 
+Image export using the "kaleido" engine requires the Kaleido package,
+which can be installed using pip:
+
+    $ pip install --upgrade kaleido
+
+
+ERROR - Inventory graph failed: 
+Image export using the "kaleido" engine requires the Kaleido package,
+which can be installed using pip:
+
+    $ pip install --upgrade kaleido
+
+Traceback (most recent call last):
+  File "/opt/airflow/alerts/alert_worker.py", line 235, in plot_inventory_png
+    img_bytes = fig.to_image(format="png")
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/venv16cdh563/lib/python3.12/site-packages/plotly/basedatatypes.py", line 3801, in to_image
+    return pio.to_image(self, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/venv16cdh563/lib/python3.12/site-packages/plotly/io/_kaleido.py", line 345, in to_image
+    raise ValueError(
+ValueError: 
+Image export using the "kaleido" engine requires the Kaleido package,
+which can be installed using pip:
+
+    $ pip install --upgrade kaleido
+
+
+INFO - Email sent successfully to peralarajashekhar2004@gmail.com
+INFO - Processed 458 alerts.
+ERROR - KPI graph failed: 
+Image export using the "kaleido" engine requires the Kaleido package,
+which can be installed using pip:
+
+    $ pip install --upgrade kaleido
+
+Traceback (most recent call last):
+  File "/opt/airflow/alerts/alert_worker.py", line 209, in plot_kpi_summary_png
+    img_bytes = fig.to_image(format="png")
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/venv2316la2i/lib/python3.12/site-packages/plotly/basedatatypes.py", line 3801, in to_image
+    return pio.to_image(self, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/venv2316la2i/lib/python3.12/site-packages/plotly/io/_kaleido.py", line 345, in to_image
+    raise ValueError(
+ValueError: 
+Image export using the "kaleido" engine requires the Kaleido package,
+which can be installed using pip:
+
+    $ pip install --upgrade kaleido
+
+
+ERROR - Inventory graph failed: 
+Image export using the "kaleido" engine requires the Kaleido package,
+which can be installed using pip:
+
+    $ pip install --upgrade kaleido
+
+Traceback (most recent call last):
+  File "/opt/airflow/alerts/alert_worker.py", line 235, in plot_inventory_png
+    img_bytes = fig.to_image(format="png")
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/venv2316la2i/lib/python3.12/site-packages/plotly/basedatatypes.py", line 3801, in to_image
+    return pio.to_image(self, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/venv2316la2i/lib/python3.12/site-packages/plotly/io/_kaleido.py", line 345, in to_image
+    raise ValueError(
+ValueError: 
+Image export using the "kaleido" engine requires the Kaleido package,
+which can be installed using pip:
+
+    $ pip install --upgrade kaleido
+
+
+INFO - Email sent successfully to peralarajashekhar2004@gmail.com
+INFO - Processed 489 alerts.
+ERROR - KPI graph failed: 
+Image export using the "kaleido" engine requires the Kaleido package,
+which can be installed using pip:
+
+    $ pip install --upgrade kaleido
+
+Traceback (most recent call last):
+  File "/opt/airflow/alerts/alert_worker.py", line 209, in plot_kpi_summary_png
+    img_bytes = fig.to_image(format="png")
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/venvys43ktt_/lib/python3.12/site-packages/plotly/basedatatypes.py", line 3801, in to_image
+    return pio.to_image(self, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/venvys43ktt_/lib/python3.12/site-packages/plotly/io/_kaleido.py", line 345, in to_image
+    raise ValueError(
+ValueError: 
+Image export using the "kaleido" engine requires the Kaleido package,
+which can be installed using pip:
+
+    $ pip install --upgrade kaleido
+
+
+ERROR - Inventory graph failed: 
+Image export using the "kaleido" engine requires the Kaleido package,
+which can be installed using pip:
+
+    $ pip install --upgrade kaleido
+
+Traceback (most recent call last):
+  File "/opt/airflow/alerts/alert_worker.py", line 235, in plot_inventory_png
+    img_bytes = fig.to_image(format="png")
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/venvys43ktt_/lib/python3.12/site-packages/plotly/basedatatypes.py", line 3801, in to_image
+    return pio.to_image(self, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/venvys43ktt_/lib/python3.12/site-packages/plotly/io/_kaleido.py", line 345, in to_image
+    raise ValueError(
+ValueError: 
+Image export using the "kaleido" engine requires the Kaleido package,
+which can be installed using pip:
+
+    $ pip install --upgrade kaleido
+
+
+ERROR - KPI graph failed: 
+Image export using the "kaleido" engine requires the Kaleido package,
+which can be installed using pip:
+
+    $ pip install --upgrade kaleido
+
+Traceback (most recent call last):
+  File "/opt/airflow/alerts/alert_worker.py", line 209, in plot_kpi_summary_png
+    img_bytes = fig.to_image(format="png")
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/venv_jjjllhv/lib/python3.12/site-packages/plotly/basedatatypes.py", line 3801, in to_image
+    return pio.to_image(self, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/venv_jjjllhv/lib/python3.12/site-packages/plotly/io/_kaleido.py", line 345, in to_image
+    raise ValueError(
+ValueError: 
+Image export using the "kaleido" engine requires the Kaleido package,
+which can be installed using pip:
+
+    $ pip install --upgrade kaleido
+
+
+ERROR - Inventory graph failed: 
+Image export using the "kaleido" engine requires the Kaleido package,
+which can be installed using pip:
+
+    $ pip install --upgrade kaleido
+
+Traceback (most recent call last):
+  File "/opt/airflow/alerts/alert_worker.py", line 235, in plot_inventory_png
+    img_bytes = fig.to_image(format="png")
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/venv_jjjllhv/lib/python3.12/site-packages/plotly/basedatatypes.py", line 3801, in to_image
+    return pio.to_image(self, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/venv_jjjllhv/lib/python3.12/site-packages/plotly/io/_kaleido.py", line 345, in to_image
+    raise ValueError(
+ValueError: 
+Image export using the "kaleido" engine requires the Kaleido package,
+which can be installed using pip:
+
+    $ pip install --upgrade kaleido
+
+
+INFO - Email sent successfully to peralarajashekhar2004@gmail.com
+INFO - Processed 706 alerts.
+INFO - Email sent successfully to peralarajashekhar2004@gmail.com
+INFO - Processed 706 alerts.
+ERROR - KPI graph failed: 
+Image export using the "kaleido" engine requires the Kaleido package,
+which can be installed using pip:
+
+    $ pip install --upgrade kaleido
+
+Traceback (most recent call last):
+  File "/opt/airflow/alerts/alert_worker.py", line 209, in plot_kpi_summary_png
+    img_bytes = fig.to_image(format="png")
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/venv_kxj_vug/lib/python3.12/site-packages/plotly/basedatatypes.py", line 3801, in to_image
+    return pio.to_image(self, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/venv_kxj_vug/lib/python3.12/site-packages/plotly/io/_kaleido.py", line 345, in to_image
+    raise ValueError(
+ValueError: 
+Image export using the "kaleido" engine requires the Kaleido package,
+which can be installed using pip:
+
+    $ pip install --upgrade kaleido
+
+
+ERROR - Inventory graph failed: 
+Image export using the "kaleido" engine requires the Kaleido package,
+which can be installed using pip:
+
+    $ pip install --upgrade kaleido
+
+Traceback (most recent call last):
+  File "/opt/airflow/alerts/alert_worker.py", line 235, in plot_inventory_png
+    img_bytes = fig.to_image(format="png")
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/venv_kxj_vug/lib/python3.12/site-packages/plotly/basedatatypes.py", line 3801, in to_image
+    return pio.to_image(self, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/venv_kxj_vug/lib/python3.12/site-packages/plotly/io/_kaleido.py", line 345, in to_image
+    raise ValueError(
+ValueError: 
+Image export using the "kaleido" engine requires the Kaleido package,
+which can be installed using pip:
+
+    $ pip install --upgrade kaleido
+
+
+INFO - Email sent successfully to peralarajashekhar2004@gmail.com
+INFO - Processed 179 alerts.

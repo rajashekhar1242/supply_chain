@@ -1,0 +1,22 @@
+# Core
+pandas>=2.2.0
+supabase>=2.5.0
+python-dotenv>=1.0.1
+psycopg2-binary>=2.9.9
+
+# Analytics
+lightgbm>=4.3.0
+prophet==1.1.5
+scikit-learn>=1.4.2
+pandas>2
+plotly>=5.0.0
+
+
+# Retry handling
+tenacity>=8.2.3
+sqlalchemy>=1.4,<2.0
+pyyaml>=6.0.1
+# Airflow providers (optional, install if needed outside docker image)
+# apache-airflow-providers-postgres
+# apache-airflow-providers-cncf-kubernetes
+

@@ -1,0 +1,57 @@
+[2025-10-06T15:39:21.404+0000] {local_task_job_runner.py:120} INFO - ::group::Pre task execution logs
+[2025-10-06T15:39:21.439+0000] {taskinstance.py:2076} INFO - Dependencies all met for dep_context=non-requeueable deps ti=<TaskInstance: supplychain_pipeline_dag.ingestion scheduled__2025-10-06T15:00:00+00:00 [queued]>
+[2025-10-06T15:39:21.456+0000] {taskinstance.py:2076} INFO - Dependencies all met for dep_context=requeueable deps ti=<TaskInstance: supplychain_pipeline_dag.ingestion scheduled__2025-10-06T15:00:00+00:00 [queued]>
+[2025-10-06T15:39:21.457+0000] {taskinstance.py:2306} INFO - Starting attempt 1 of 4
+[2025-10-06T15:39:21.482+0000] {taskinstance.py:2330} INFO - Executing <Task(PythonOperator): ingestion> on 2025-10-06 15:00:00+00:00
+[2025-10-06T15:39:21.526+0000] {logging_mixin.py:188} WARNING - /home/***/.local/lib/python3.12/site-packages/***/task/task_runner/standard_task_runner.py:61 DeprecationWarning: This process (pid=310) is multi-threaded, use of fork() may lead to deadlocks in the child.
+[2025-10-06T15:39:21.518+0000] {standard_task_runner.py:90} INFO - Running: ['***', 'tasks', 'run', 'supplychain_pipeline_dag', 'ingestion', 'scheduled__2025-10-06T15:00:00+00:00', '--job-id', '49', '--raw', '--subdir', 'DAGS_FOLDER/supplychain_pipeline_dag.py', '--cfg-path', '/tmp/tmpxovulvo4']
+[2025-10-06T15:39:21.528+0000] {standard_task_runner.py:63} INFO - Started process 346 to run task
+[2025-10-06T15:39:21.529+0000] {standard_task_runner.py:91} INFO - Job 49: Subtask ingestion
+[2025-10-06T15:39:21.678+0000] {task_command.py:426} INFO - Running <TaskInstance: supplychain_pipeline_dag.ingestion scheduled__2025-10-06T15:00:00+00:00 [running]> on host 843049cc59c8
+[2025-10-06T15:39:21.893+0000] {taskinstance.py:2648} INFO - Exporting env vars: AIRFLOW_CTX_DAG_OWNER='***' AIRFLOW_CTX_DAG_ID='supplychain_pipeline_dag' AIRFLOW_CTX_TASK_ID='ingestion' AIRFLOW_CTX_EXECUTION_DATE='2025-10-06T15:00:00+00:00' AIRFLOW_CTX_TRY_NUMBER='1' AIRFLOW_CTX_DAG_RUN_ID='scheduled__2025-10-06T15:00:00+00:00'
+[2025-10-06T15:39:21.896+0000] {taskinstance.py:430} INFO - ::endgroup::
+[2025-10-06T15:39:21.923+0000] {main.py:52} INFO - Ingestion pipeline started
+[2025-10-06T15:39:21.925+0000] {config.py:75} INFO - Settings loaded (env=default)
+[2025-10-06T15:39:21.926+0000] {db_handler.py:12} INFO - Initializing Supabase client
+[2025-10-06T15:39:21.995+0000] {mail_handler.py:8} INFO - Connecting to imap.gmail.com...
+[2025-10-06T15:39:24.730+0000] {mail_handler.py:17} INFO - Fetching emails started...
+[2025-10-06T15:39:25.100+0000] {main.py:59} INFO - Matched 2 emails with allowed subjects
+[2025-10-06T15:39:25.772+0000] {file_processor.py:29} INFO - Saved attachment fact_order_line_usa_2025-05-17.csv from email b'104' to data/downloads/fact_order_line_usa_2025-05-17.csv
+[2025-10-06T15:39:27.354+0000] {_client.py:1025} INFO - HTTP Request: GET https://ytuiqgrpbwdxrmbzssrb.supabase.co/rest/v1/processed_files?select=id&file_hash=eq.c7d62f6224aa0ca0304a9fe15cefa1d450cc9a05a8856c85d805c6807f1bb52f "HTTP/2 200 OK"
+[2025-10-06T15:39:27.362+0000] {main.py:16} INFO - Duplicate skipped fact_order_line_usa_2025-05-17.csv
+[2025-10-06T15:39:27.364+0000] {main.py:70} ERROR - Ingestion error: [Errno 2] No such file or directory: 'data/downloads/fact_order_line_usa_2025-05-17.csv'
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.12/shutil.py", line 847, in move
+    os.rename(src, real_dst)
+FileNotFoundError: [Errno 2] No such file or directory: 'data/downloads/fact_order_line_usa_2025-05-17.csv' -> 'data/processed/fact_order_line_usa_2025-05-17_1759765167.csv'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/opt/airflow/ingestion/main.py", line 62, in run_ingestion
+    if process_email(mail, eid, settings.subject_allow, settings.expected_sender,
+       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/airflow/ingestion/mail_handler.py", line 64, in process_email
+    path = process_file_fn(part, eid, subject, sender)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/airflow/ingestion/main.py", line 64, in <lambda>
+    process_file(part, eid, subject, sender, supabase)):
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/airflow/ingestion/main.py", line 17, in process_file
+    safe_move(path, PROCESSED)
+  File "/opt/airflow/ingestion/file_processor.py", line 81, in safe_move
+    shutil.move(src, dst)
+  File "/usr/local/lib/python3.12/shutil.py", line 867, in move
+    copy_function(src, real_dst)
+  File "/usr/local/lib/python3.12/shutil.py", line 475, in copy2
+    copyfile(src, dst, follow_symlinks=follow_symlinks)
+  File "/usr/local/lib/python3.12/shutil.py", line 260, in copyfile
+    with open(src, 'rb') as fsrc:
+         ^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: 'data/downloads/fact_order_line_usa_2025-05-17.csv'
+[2025-10-06T15:39:27.393+0000] {python.py:237} INFO - Done. Returned value was: None
+[2025-10-06T15:39:27.395+0000] {taskinstance.py:441} INFO - ::group::Post task execution logs
+[2025-10-06T15:39:27.433+0000] {taskinstance.py:1206} INFO - Marking task as SUCCESS. dag_id=supplychain_pipeline_dag, task_id=ingestion, run_id=scheduled__2025-10-06T15:00:00+00:00, execution_date=20251006T150000, start_date=20251006T153921, end_date=20251006T153927
+[2025-10-06T15:39:27.529+0000] {local_task_job_runner.py:240} INFO - Task exited with return code 0
+[2025-10-06T15:39:27.580+0000] {taskinstance.py:3503} INFO - 1 downstream tasks scheduled from follow-on schedule check
+[2025-10-06T15:39:27.592+0000] {local_task_job_runner.py:222} INFO - ::endgroup::
