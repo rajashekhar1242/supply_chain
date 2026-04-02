@@ -82,17 +82,15 @@ engine = get_engine()
 # -----------------------------------------------------
 
 def run_query(sql, params=None):
-
     with engine.connect() as conn:
-        df = pd.read_sql_query(text(sql), conn, params=params)
-
+        df = pd.read_sql_query(sql, conn, params=params)  # ✅ REMOVE text()
     return df
 
 def safe_query(sql: str, params=None):
     params = params or {}
     try:
         with engine.connect() as conn:
-            return pd.read_sql_query(text(sql), conn, params=params)
+            return pd.read_sql_query(sql, conn, params=params)  # ✅ REMOVE text()
     except Exception as exc:
         st.error(f"⚠️ Query failed: {exc}")
         return pd.DataFrame()
