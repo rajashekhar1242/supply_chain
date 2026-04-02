@@ -19,24 +19,58 @@ st.title("Supply Chain Control Tower")
 # -----------------------------------------------------
 
 @st.cache_resource
+
 def get_engine():
 
-    # 🔐 Use Streamlit secrets (deployment) with fallback to local env
-    DB_USER = st.secrets.get("DB_USER", os.getenv("DB_USER"))
-    DB_PASS = st.secrets.get("DB_PASSWORD", os.getenv("DB_PASS"))
-    DB_HOST = st.secrets.get("DB_HOST", os.getenv("DB_HOST"))
-    DB_PORT = st.secrets.get("DB_PORT", os.getenv("DB_PORT", "5432"))
-    DB_NAME = st.secrets.get("DB_NAME", os.getenv("DB_NAME"))
+    import os
+    from dotenv import load_dotenv
 
-    # 🚨 Safety check (prevents None error)
+    # -----------------------------------------
+    # 🔐 SAFE SECRET READER (CRITICAL FIX)
+    # -----------------------------------------
+    def get_secret(key):
+        try:
+            return st.secrets[key]
+        except:
+            return None
+
+    # -----------------------------------------
+    # 🔐 1. Try Streamlit Secrets (SAFE)
+    # -----------------------------------------
+    DB_USER = get_secret("DB_USER")
+    DB_PASS = get_secret("DB_PASSWORD")
+    DB_HOST = get_secret("DB_HOST")
+    DB_PORT = get_secret("DB_PORT") or "5432"
+    DB_NAME = get_secret("DB_NAME")
+
+    # -----------------------------------------
+    # 💻 2. Fallback to LOCAL .env
+    # -----------------------------------------
     if not all([DB_USER, DB_PASS, DB_HOST, DB_NAME]):
-        st.error("❌ Database credentials missing. Check Streamlit secrets.")
+
+        load_dotenv()
+
+        DB_USER = os.getenv("DB_USER")
+        DB_PASS = os.getenv("DB_PASS")
+        DB_HOST = os.getenv("DB_HOST")
+        DB_PORT = os.getenv("DB_PORT", "5432")
+        DB_NAME = os.getenv("DB_NAME")
+
+    # -----------------------------------------
+    # 🚨 3. FINAL SAFETY CHECK
+    # -----------------------------------------
+    if not all([DB_USER, DB_PASS, DB_HOST, DB_NAME]):
+        st.error("❌ Database credentials missing (no .env or secrets)")
         st.stop()
 
+    # -----------------------------------------
+    # 🚀 4. CREATE ENGINE
+    # -----------------------------------------
     engine = create_engine(
         f"postgresql+psycopg2://{DB_USER}:{DB_PASS}@{DB_HOST}:{DB_PORT}/{DB_NAME}",
         pool_pre_ping=True,
-        pool_recycle=1800
+        pool_recycle=1800,
+        connect_args={"sslmode": "require"}
     )
 
     return engine
