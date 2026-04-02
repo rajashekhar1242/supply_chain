@@ -21,8 +21,20 @@ st.title("Supply Chain Control Tower")
 @st.cache_resource
 def get_engine():
 
+    # 🔐 Use Streamlit secrets (deployment) with fallback to local env
+    DB_USER = st.secrets.get("DB_USER", os.getenv("DB_USER"))
+    DB_PASS = st.secrets.get("DB_PASSWORD", os.getenv("DB_PASS"))
+    DB_HOST = st.secrets.get("DB_HOST", os.getenv("DB_HOST"))
+    DB_PORT = st.secrets.get("DB_PORT", os.getenv("DB_PORT", "5432"))
+    DB_NAME = st.secrets.get("DB_NAME", os.getenv("DB_NAME"))
+
+    # 🚨 Safety check (prevents None error)
+    if not all([DB_USER, DB_PASS, DB_HOST, DB_NAME]):
+        st.error("❌ Database credentials missing. Check Streamlit secrets.")
+        st.stop()
+
     engine = create_engine(
-        f"postgresql+psycopg2://{os.getenv('DB_USER')}:{os.getenv('DB_PASS')}@{os.getenv('DB_HOST')}:{os.getenv('DB_PORT','5432')}/{os.getenv('DB_NAME')}",
+        f"postgresql+psycopg2://{DB_USER}:{DB_PASS}@{DB_HOST}:{DB_PORT}/{DB_NAME}",
         pool_pre_ping=True,
         pool_recycle=1800
     )
