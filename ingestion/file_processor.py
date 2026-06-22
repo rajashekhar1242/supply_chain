@@ -49,7 +49,7 @@ def normalize_dates(df, file_path: str | None = None):
 
     for col in df.columns:
         if "date" in col.lower():
-            df[col] = pd.to_datetime(df[col], errors="coerce", dayfirst=True)
+            df[col] = pd.to_datetime(df[col], errors="coerce")
             df[col] = df[col].dt.strftime("%Y-%m-%d")
             log.debug(f"Normalized column {col} to YYYY-MM-DD")
     return df

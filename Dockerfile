@@ -1,10 +1,7 @@
-# Base image
 FROM apache/airflow:2.9.2-python3.12
 
-# Switch to root to install system dependencies
 USER root
 
-# Install system dependencies needed for Prophet, LightGBM, etc.
 RUN apt-get update && apt-get install -y \
     build-essential \
     cmake \
@@ -13,16 +10,26 @@ RUN apt-get update && apt-get install -y \
     libssl-dev \
     libffi-dev \
     git \
+    wget \
+    ca-certificates \
+    fonts-liberation \
+    libnss3 \
+    libatk-bridge2.0-0 \
+    libx11-xcb1 \
+    libxcomposite1 \
+    libxdamage1 \
+    libxrandr2 \
+    libgbm1 \
+    libasound2 \
+    libgtk-3-0 \
+    chromium \
+    chromium-driver \
     && rm -rf /var/lib/apt/lists/*
 
-# Switch back to airflow user
 USER airflow
 
-# Copy Python dependencies
-COPY requirements.txt /requirements.txt
-RUN pip install --no-cache-dir -r /requirements.txt
-
-
+COPY requirements-airflow.txt /requirements-airflow.txt
+RUN pip install --no-cache-dir -r /requirements-airflow.txt
 
 # Copy project code
 COPY dags /opt/airflow/dags

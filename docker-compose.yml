@@ -1,100 +1,147 @@
-
+x-airflow-common: &airflow-common
+  build:
+    context: .
+    dockerfile: Dockerfile
+  image: supplychain-airflow:latest
+  env_file:
+    - .env
+  environment: &airflow-environment
+    AIRFLOW__CORE__EXECUTOR: LocalExecutor
+    AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}@postgres:5432/airflow
+    AIRFLOW__CORE__FERNET_KEY: ${AIRFLOW__CORE__FERNET_KEY:?Set AIRFLOW__CORE__FERNET_KEY in .env}
+    AIRFLOW__CORE__LOAD_EXAMPLES: "False"
+    AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION: "False"
+    AIRFLOW__CORE__DAGBAG_IMPORT_TIMEOUT: "120"
+    AIRFLOW__WEBSERVER__EXPOSE_CONFIG: "False"
+    AIRFLOW__WEBSERVER__SECRET_KEY: ${AIRFLOW__WEBSERVER__SECRET_KEY:?Set AIRFLOW__WEBSERVER__SECRET_KEY in .env}
+    AIRFLOW__WEBSERVER__BASE_URL: https://${AIRFLOW_DOMAIN:?Set AIRFLOW_DOMAIN in .env}
+    AIRFLOW__WEBSERVER__ENABLE_PROXY_FIX: "True"
+    AIRFLOW__API__AUTH_BACKENDS: airflow.api.auth.backend.basic_auth
+    AIRFLOW__SCHEDULER__ENABLE_HEALTH_CHECK: "True"
+    PYTHONPATH: /opt/airflow
+  volumes:
+    - airflow_logs:/opt/airflow/logs
+    - pipeline_data:/opt/airflow/data
+  depends_on:
+    postgres:
+      condition: service_healthy
+    airflow-init:
+      condition: service_completed_successfully
+  restart: unless-stopped
 
 services:
   postgres:
-    image: postgres:15
+    image: postgres:15-alpine
     environment:
       POSTGRES_USER: airflow
-      POSTGRES_PASSWORD: airflow
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}
       POSTGRES_DB: airflow
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U airflow"]
+      test: ["CMD-SHELL", "pg_isready -U airflow -d airflow"]
       interval: 10s
       timeout: 5s
-      retries: 5
-
-  airflow-webserver:
-    build: .
-    image: supplychain-airflow:latest
-    depends_on:
-      postgres:
-        condition: service_healthy
-    environment:
-      AIRFLOW__CORE__EXECUTOR: LocalExecutor
-      AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@postgres:5432/airflow
-      AIRFLOW__CORE__LOAD_EXAMPLES: "False"
-      AIRFLOW__API__AUTH_BACKENDS: airflow.api.auth.backend.basic_auth
-      AIRFLOW__CORE__FERNET_KEY: ${AIRFLOW__CORE__FERNET_KEY}
-      AIRFLOW_UID: 50000
-      PYTHONPATH: /opt/airflow
-    ports:
-      - "8080:8080"
-    volumes:
-      - ./analytics:/opt/airflow/analytics
-      - ./ingestion:/opt/airflow/ingestion
-      - ./alerts:/opt/airflow/alerts
-      - ./dags:/opt/airflow/dags
-      - ./logs:/opt/airflow/logs
-      - ./.env:/opt/airflow/.env
-    command: webserver
-    restart: always
-
-  airflow-scheduler:
-    build: .
-    image: supplychain-airflow:latest
-    depends_on:
-      postgres:
-        condition: service_healthy
-    environment:
-      AIRFLOW__CORE__EXECUTOR: LocalExecutor
-      AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@postgres:5432/airflow
-      AIRFLOW__CORE__LOAD_EXAMPLES: "False"
-      AIRFLOW__CORE__FERNET_KEY: ${AIRFLOW__CORE__FERNET_KEY}
-      AIRFLOW_UID: 50000
-      PYTHONPATH: /opt/airflow
-    volumes:
-      - ./analytics:/opt/airflow/analytics
-      - ./ingestion:/opt/airflow/ingestion
-      - ./alerts:/opt/airflow/alerts
-      - ./dags:/opt/airflow/dags
-      - ./logs:/opt/airflow/logs
-      - ./.env:/opt/airflow/.env
-    command: scheduler
-    restart: always
+      retries: 10
+    restart: unless-stopped
 
   airflow-init:
-    build: .
-    image: supplychain-airflow:latest
+    <<: *airflow-common
     depends_on:
       postgres:
         condition: service_healthy
-    environment:
-      AIRFLOW__CORE__EXECUTOR: LocalExecutor
-      AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@postgres:5432/airflow
-      AIRFLOW__CORE__FERNET_KEY: ${AIRFLOW__CORE__FERNET_KEY}
-      AIRFLOW_UID: 50000
-      PYTHONPATH: /opt/airflow
     entrypoint: /bin/bash
     command:
       - -c
       - |
-        airflow db init &&
+        set -e
+        airflow db migrate
         airflow users create \
-          --username airflow \
-          --firstname Admin \
-          --lastname User \
+          --username "$${AIRFLOW_ADMIN_USERNAME}" \
+          --password "$${AIRFLOW_ADMIN_PASSWORD}" \
+          --firstname "$${AIRFLOW_ADMIN_FIRSTNAME}" \
+          --lastname "$${AIRFLOW_ADMIN_LASTNAME}" \
           --role Admin \
-          --email admin@example.com \
-          --password airflow
+          --email "$${AIRFLOW_ADMIN_EMAIL}" || true
+        airflow users create \
+          --username "$${AIRFLOW_DEMO_USERNAME}" \
+          --password "$${AIRFLOW_DEMO_PASSWORD}" \
+          --firstname "Portfolio" \
+          --lastname "Viewer" \
+          --role Viewer \
+          --email "$${AIRFLOW_DEMO_EMAIL}" || true
+    restart: "no"
+
+  airflow-webserver:
+    <<: *airflow-common
+    command: webserver
+    expose:
+      - "8080"
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - python -c "import urllib.request; urllib.request.urlopen('http://localhost:8080/health', timeout=5)"
+      interval: 30s
+      timeout: 10s
+      retries: 10
+      start_period: 60s
+
+  airflow-scheduler:
+    <<: *airflow-common
+    command: scheduler
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - airflow jobs check --job-type SchedulerJob --hostname "$${HOSTNAME}"
+      interval: 30s
+      timeout: 10s
+      retries: 10
+      start_period: 60s
+
+  dashboard:
+    build:
+      context: .
+      dockerfile: Dockerfile.dashboard
+    image: supplychain-dashboard:latest
+    env_file:
+      - .env
+    expose:
+      - "8501"
+    healthcheck:
+      test:
+        - CMD
+        - python
+        - -c
+        - import urllib.request; urllib.request.urlopen('http://localhost:8501/_stcore/health', timeout=5)
+      interval: 30s
+      timeout: 10s
+      retries: 10
+      start_period: 30s
+    restart: unless-stopped
+
+  caddy:
+    image: caddy:2-alpine
+    environment:
+      AIRFLOW_DOMAIN: ${AIRFLOW_DOMAIN:?Set AIRFLOW_DOMAIN in .env}
+      DASHBOARD_DOMAIN: ${DASHBOARD_DOMAIN:?Set DASHBOARD_DOMAIN in .env}
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
     volumes:
-      - ./analytics:/opt/airflow/analytics
-      - ./ingestion:/opt/airflow/ingestion
-      - ./alerts:/opt/airflow/alerts
-      - ./dags:/opt/airflow/dags
-      - ./logs:/opt/airflow/logs
-      - ./.env:/opt/airflow/.env
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      airflow-webserver:
+        condition: service_healthy
+      dashboard:
+        condition: service_healthy
+    restart: unless-stopped
 
 volumes:
   postgres_data:
+  airflow_logs:
+  pipeline_data:
+  caddy_data:
+  caddy_config:

@@ -1,237 +1,211 @@
 import pandas as pd
-import lightgbm as lgb
-from datetime import date, datetime, timedelta
-from supabase import create_client, Client
-from ingestion.config import load_settings
+from datetime import datetime, timedelta, date
 from ingestion.utils import log
-import sys
-import logging
-import time
-import httpx
+import numpy as np
 
-# ----------------------------------------------------------------------------
-# 1. UTF-8 Console Logging Setup
-# ----------------------------------------------------------------------------
-try:
-    sys.stdout.reconfigure(encoding="utf-8")
-except Exception:
-    pass
+# ML imports
+from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier, VotingClassifier
+from sklearn.linear_model import LogisticRegression
+from sklearn.preprocessing import StandardScaler
+from sklearn.pipeline import Pipeline
 
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s - [%(levelname)s] - %(message)s",
-    encoding="utf-8",
-)
+from supabase import create_client
 
-# ----------------------------------------------------------------------------
-# 2. Load Settings & Initialize Supabase
-# ----------------------------------------------------------------------------
-settings = load_settings()
-supabase: Client = create_client(settings.supabase_url, settings.supabase_service_role_key)
 
-# ----------------------------------------------------------------------------
-# 3. Supabase Fetch with Retry (optional date filter)
-# ----------------------------------------------------------------------------
-def fetch_with_retry(table_name: str, select_fields: str, start_date: str = None, date_column: str = None, retries=3, delay=2):
-    for attempt in range(retries):
-        try:
-            query = supabase.table(table_name).select(select_fields)
-            if start_date and date_column:
-                query = query.gte(date_column, start_date)
-            return query.execute()
-        except (httpx.RemoteProtocolError, httpx.RequestError) as e:
-            log.warning(f"Attempt {attempt+1} failed fetching {table_name}: {e}")
-            time.sleep(delay)
-    raise ConnectionError(f"Failed to fetch data from {table_name} after {retries} attempts")
+# ------------------------------------------------------------
+# 1️⃣ Fetch KPI Data (Using Supabase Client)
+# ------------------------------------------------------------
+def fetch_kpi_data(supabase):
 
-# ----------------------------------------------------------------------------
-# 4. Fetch KPI Data (Last 180 Days) + Time-based Features
-# ----------------------------------------------------------------------------
-def fetch_kpi_data() -> pd.DataFrame:
-    log.info("Calculating real OTIF % from last 180 days of order data...")
+    log.info("Fetching OTIF data from Supabase...")
 
-    start_date = (datetime.now() - timedelta(days=180)).strftime("%Y-%m-%d")
+    start_date = (datetime.now() - timedelta(days=3650)).strftime("%Y-%m-%d")
 
-    # Fetch orders with retry
-    orders = fetch_with_retry(
-        "fact_order_line",
-        "customer_id, order_placement_date, \"On Time\", \"In Full\", \"On Time In Full\"",
-        start_date=start_date,
-        date_column="order_placement_date"
+    response = (
+        supabase
+        .table("fact_order_line")
+        .select("customer_id, order_placement_date, on_time, in_full, on_time_in_full")
+        .gte("order_placement_date", start_date)
+        .execute()
     )
 
-    df = pd.DataFrame(orders.data)
-    if df.empty:
+    data = response.data
+
+    if not data:
         log.warning("No order data found.")
         return pd.DataFrame()
 
-    # Convert and clean
-    df["order_placement_date"] = pd.to_datetime(df["order_placement_date"], errors="coerce")
-    for col in ["On Time", "In Full", "On Time In Full"]:
-        df[col] = pd.to_numeric(df[col], errors="coerce").fillna(0)
+    df = pd.DataFrame(data)
 
-    # --- Time-based features ---
-    df["order_day_of_week"] = df["order_placement_date"].dt.dayofweek
-    df["order_month"] = df["order_placement_date"].dt.month
+    df["order_placement_date"] = pd.to_datetime(df["order_placement_date"])
 
-    # Days since last order per customer
-    df = df.sort_values(["customer_id", "order_placement_date"])
-    df["days_since_last_order"] = df.groupby("customer_id")["order_placement_date"].diff().dt.days.fillna(0)
-
-    # --- Rolling OTIF trend feature ---
-    df["otif_30d_avg"] = (
-        df.groupby("customer_id")["On Time In Full"]
-        .transform(lambda x: x.rolling(window=30, min_periods=5).mean() * 100)
+    df[["on_time", "in_full", "on_time_in_full"]] = (
+        df[["on_time", "in_full", "on_time_in_full"]]
+        .apply(pd.to_numeric, errors="coerce")
         .fillna(0)
     )
-    df["recent_otif_trend"] = df["otif_30d_avg"].apply(
-        lambda x: -1 if x < 50 else (1 if x > 80 else 0)
+
+    df = df.sort_values(["customer_id", "order_placement_date"])
+
+    df["days_since_last_order"] = (
+        df.groupby("customer_id")["order_placement_date"]
+        .diff()
+        .dt.days
+        .fillna(0)
     )
 
-    # --- Aggregate by customer ---
+    df["otif_30d_avg"] = (
+        df.groupby("customer_id")["on_time_in_full"]
+        .transform(lambda x: x.rolling(30, min_periods=5).mean() * 100)
+        .fillna(0)
+    )
+
     df_agg = df.groupby("customer_id").agg(
         total_orders=("customer_id", "count"),
-        on_time_orders=("On Time", "sum"),
-        in_full_orders=("In Full", "sum"),
-        otif_orders=("On Time In Full", "sum"),
-        recent_otif_trend=("recent_otif_trend", "mean"),
+        on_time_orders=("on_time", "sum"),
+        in_full_orders=("in_full", "sum"),
+        otif_orders=("on_time_in_full", "sum"),
         avg_days_since_last_order=("days_since_last_order", "mean"),
-        avg_order_day_of_week=("order_day_of_week", "mean"),
-        avg_order_month=("order_month", "mean")
+        otif_30d_avg=("otif_30d_avg", "mean")
     ).reset_index()
 
-    df_agg["on_time_pct"] = (df_agg["on_time_orders"] / df_agg["total_orders"] * 100).round(2)
-    df_agg["in_full_pct"] = (df_agg["in_full_orders"] / df_agg["total_orders"] * 100).round(2)
-    df_agg["otif_pct"] = (df_agg["otif_orders"] / df_agg["total_orders"] * 100).round(2)
+    df_agg["on_time_pct"] = df_agg["on_time_orders"] / df_agg["total_orders"] * 100
+    df_agg["in_full_pct"] = df_agg["in_full_orders"] / df_agg["total_orders"] * 100
+    df_agg["otif_pct"] = df_agg["otif_orders"] / df_agg["total_orders"] * 100
 
-    # Fetch targets (no date filter)
-    targets = fetch_with_retry("dim_targets_order", "*")
-    df_targets = pd.DataFrame(targets.data)
-    if not df_targets.empty:
-        df_agg = df_agg.merge(df_targets, on="customer_id", how="left")
-
-    # Fetch customer metadata (no date filter)
-    customers = fetch_with_retry("dim_customers", "customer_id, city")
-    df_customers = pd.DataFrame(customers.data)
-    if not df_customers.empty:
-        df_agg = df_agg.merge(df_customers, on="customer_id", how="left")
-        df_agg["city_encoded"] = pd.Categorical(df_agg["city"]).codes
-    else:
-        df_agg["city_encoded"] = 0
-
-    log.info(f"Calculated OTIF, trends, and time-based features for {len(df_agg)} customers.")
     return df_agg
 
-# ----------------------------------------------------------------------------
-# 5. Prepare Dataset
-# ----------------------------------------------------------------------------
-def prepare_dataset(df: pd.DataFrame):
-    log.info("Preparing dataset with engineered features...")
 
-    df.rename(
-        columns={
-            "otif_target%": "target_otif",
-            "ontime_target%": "target_ontime",
-            "infull_target%": "target_infull",
-        },
-        inplace=True,
-    )
-
-    for col in ["target_otif", "target_ontime", "target_infull"]:
-        df[col] = pd.to_numeric(df[col], errors="coerce").fillna(70.0)
-
-    df["label"] = (df["otif_pct"] < 70).astype(int)
+# ------------------------------------------------------------
+# 2️⃣ Risk Scoring
+# ------------------------------------------------------------
+def calculate_risk_score(df):
 
     feature_cols = [
         "otif_pct",
         "on_time_pct",
         "in_full_pct",
-        "total_orders",
-        "target_otif",
-        "target_ontime",
-        "target_infull",
-        "recent_otif_trend",
-        "city_encoded",
         "avg_days_since_last_order",
-        "avg_order_day_of_week",
-        "avg_order_month"
+        "otif_30d_avg"
     ]
 
-    df[feature_cols] = df[feature_cols].fillna(0)
-    log.info(f"Dataset prepared with {len(df)} rows and features: {feature_cols}")
-    return df, feature_cols
+    X = df[feature_cols].fillna(0)
 
-# ----------------------------------------------------------------------------
-# 6. Model + Business Rule Hybrid
-# ----------------------------------------------------------------------------
-def train_and_predict(df: pd.DataFrame, feature_cols: list) -> pd.DataFrame:
-    log.info("Generating predictions...")
+    threshold = df["otif_pct"].quantile(0.3)
+    df["risk_class"] = (df["otif_pct"] < threshold).astype(int)
 
-    # Step 1: Compute risk score (model or fallback)
-    if len(df) >= 10 and df["label"].nunique() > 1:
-        try:
-            model = lgb.LGBMClassifier(
-                n_estimators=50,
-                learning_rate=0.1,
-                num_leaves=31,
-                min_data_in_leaf=1,
-                random_state=42,
-            )
-            model.fit(df[feature_cols], df["label"])
-            df["risk_score"] = model.predict_proba(df[feature_cols])[:, 1]
-        except Exception as e:
-            log.warning(f"Model failed, using fallback: {e}")
-            df["risk_score"] = (70 - df["otif_pct"]) / 70
+    if df["risk_class"].nunique() < 2:
+
+        log.warning("Insufficient label diversity — using fallback scoring.")
+
+        df["risk_score"] = (
+            (df["otif_pct"].max() - df["otif_pct"]) /
+            (df["otif_pct"].max() - df["otif_pct"].min() + 1e-6)
+        )
+
     else:
-        df["risk_score"] = (70 - df["otif_pct"]) / 70
 
-    # Step 2: Assign label based on risk score (0.5 threshold)
-    df["risk_label"] = df["risk_score"].apply(lambda x: "At Risk" if x > 0.5 else "Safe")
+        ensemble_model = VotingClassifier(
+            estimators=[
+                ("lr", Pipeline([
+                    ("scaler", StandardScaler()),
+                    ("lr", LogisticRegression(max_iter=500))
+                ])),
+                ("rf", RandomForestClassifier(
+                    n_estimators=120,
+                    max_depth=4,
+                    random_state=42
+                )),
+                ("gb", GradientBoostingClassifier(
+                    n_estimators=120,
+                    learning_rate=0.05,
+                    max_depth=3,
+                    random_state=42
+                ))
+            ],
+            voting="soft"
+        )
+
+        ensemble_model.fit(X, df["risk_class"])
+        df["risk_score"] = ensemble_model.predict_proba(X)[:, 1]
+
+    # Normalize score 0–1
+    df["risk_score"] = (
+        (df["risk_score"] - df["risk_score"].min()) /
+        (df["risk_score"].max() - df["risk_score"].min() + 1e-6)
+    )
+
+    df["risk_label"] = pd.qcut(
+        df["risk_score"],
+        q=3,
+        labels=["Low Risk", "Medium Risk", "High Risk"]
+    )
 
     return df
-# ----------------------------------------------------------------------------
-# 7. Store Predictions
-# ----------------------------------------------------------------------------
-def store_predictions(df: pd.DataFrame):
-    log.info("Uploading risk predictions to Supabase...")
+
+
+# ------------------------------------------------------------
+# 3️⃣ Store Predictions
+# ------------------------------------------------------------
+def store_predictions(supabase, df):
+
+    records = df[[
+        "customer_id",
+        "risk_score",
+        "risk_label"
+    ]].copy()
+
+    records["prediction_date"] = str(date.today())
+
+    supabase.table("kpi_risk_predictions") \
+        .insert(records.to_dict(orient="records")) \
+        .execute()
+
+    log.info("Customer risk predictions stored (historical mode).")
+
+
+# ------------------------------------------------------------
+# Core Pipeline
+# ------------------------------------------------------------
+def run_customer_risk_pipeline(supabase):
+
+    log.info("Starting Customer Risk Engine...")
+
+    df = fetch_kpi_data(supabase)
 
     if df.empty:
-        log.warning("No data to insert.")
+        log.warning("No KPI data available — skipping risk scoring.")
         return
 
-    records = [
-        {
-            "customer_id": int(row["customer_id"]),
-            "prediction_date": date.today().isoformat(),
-            "risk_score": float(row.get("risk_score", 0.0)),
-            "risk_label": str(row.get("risk_label", "Safe")),
-        }
-        for _, row in df.iterrows()
-    ]
-
-    if records:
-        supabase.table("kpi_risk_predictions").insert(records).execute()
-        log.info(f"Successfully inserted {len(records)} predictions.")
-
-# ----------------------------------------------------------------------------
-# 8. Run Pipeline
-# ----------------------------------------------------------------------------
-def run_customer_risk_pipeline():
-    log.info("Starting Customer KPI Risk Pipeline...")
-
-    df = fetch_kpi_data()
-    if df.empty:
-        log.warning("No data available.")
-        return
-
-    df_prepared, features = prepare_dataset(df)
-    df_predicted = train_and_predict(df_prepared, features)
-    store_predictions(df_predicted)
+    df_scored = calculate_risk_score(df)
+    store_predictions(supabase, df_scored)
 
     log.info("Customer risk pipeline completed successfully.")
 
-# ----------------------------------------------------------------------------
-# 9. Execute
-# ----------------------------------------------------------------------------
+
+# ------------------------------------------------------------
+# 🔥 AIRFLOW ENTRY POINT
+# ------------------------------------------------------------
+def run(**context):
+
+    try:
+        from ingestion.config import load_settings
+
+        log.info("Initializing Supabase Client...")
+
+        settings = load_settings(env="dev")
+
+        supabase = create_client(
+            settings.supabase_url,
+            settings.supabase_key   # ✅ FIXED
+        )
+
+        run_customer_risk_pipeline(supabase)
+
+    except Exception as e:
+        log.error(f"Customer Risk Engine failed: {e}", exc_info=True)
+        raise
+
+
 if __name__ == "__main__":
-    run_customer_risk_pipeline()
+    run()

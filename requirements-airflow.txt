@@ -1,0 +1,15 @@
+# Runtime dependencies imported by ingestion, analytics, and alert tasks.
+pandas>=2.2,<3
+numpy>=1.26,<3
+supabase>=2.5,<3
+python-dotenv>=1.0,<2
+psycopg2-binary>=2.9.9,<3
+PyYAML>=6,<7
+tenacity>=8.2,<10
+catboost>=1.2,<2
+scikit-learn>=1.4,<2
+matplotlib>=3.8,<4
+plotly>=5,<7
+kaleido>=0.2.1,<2
+imageio>=2.34,<3
+pillow>=10,<12

@@ -1,40 +1,77 @@
 # ingestion/db_handler.py
 
 from supabase import create_client, Client
+from dotenv import load_dotenv
+import os
 from ingestion.utils import log
 
-def init_db(settings) -> Client | None:
-    """Initialize Supabase client"""
-    try:
-        if not settings.supabase_url or not settings.supabase_service_role_key:
-            log.warning("No Supabase credentials")
-            return None
-        log.info("Initializing Supabase client")
-        return create_client(settings.supabase_url, settings.supabase_service_role_key)
-    except Exception as e:
-        log.error(f"Supabase init failed: {e}")
-        return None
+load_dotenv()
+
+SUPABASE_URL = os.getenv("SUPABASE_URL")
+SUPABASE_KEY = os.getenv("SUPABASE_SERVICE_ROLE_KEY")
+
+if not SUPABASE_URL or not SUPABASE_KEY:
+    raise ValueError("Supabase credentials missing in .env")
+
+supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 
 
-def check_duplicate(supabase, fhash: str) -> bool:
-    """Check if file hash already exists in processed_files"""
+def init_db(settings=None):
+    """
+    Supabase client is initialized globally.
+    Keeping this function for compatibility.
+    """
+    log.info("Supabase client initialized")
+    return supabase
+
+
+def check_duplicate(client: Client, fhash: str) -> bool:
+    """Check if file hash exists in processed_files"""
     try:
-        result = supabase.table("processed_files").select("id").eq("file_hash", fhash).execute()
-        return len(result.data) > 0
+        response = (
+            client
+            .table("processed_files")
+            .select("file_hash")
+            .eq("file_hash", fhash)
+            .limit(1)
+            .execute()
+        )
+
+        return len(response.data) > 0
+
     except Exception as e:
         log.error(f"Duplicate check failed: {e}")
         return False
 
 
-def insert_records(supabase, table: str, records: list, file_name: str, fhash: str, subject: str, sender: str):
-    """Insert into target fact table, then log the file in processed_files"""
+def insert_records(
+    client: Client,
+    table: str,
+    records: list,
+    file_name: str,
+    fhash: str,
+    subject: str,
+    sender: str,
+):
+    """Insert records and log processed file"""
+
     if not records:
         return
 
     try:
-        supabase.table(table).insert(records).execute()
+        batch_size = 500
 
-        supabase.table("processed_files").insert({
+        # Batch insert
+        for i in range(0, len(records), batch_size):
+            batch = records[i:i + batch_size]
+
+            response = client.table(table).insert(batch).execute()
+
+            if response.data is None:
+                raise Exception(response)
+
+        # Log processed file
+        client.table("processed_files").insert({
             "filename": file_name,
             "file_hash": fhash,
             "target_table": table,
@@ -42,6 +79,7 @@ def insert_records(supabase, table: str, records: list, file_name: str, fhash: s
             "email_sender": sender
         }).execute()
 
-        log.info(f"Inserted {len(records)} rows into {table} and logged {file_name} in processed_files")
+        log.info(f"Inserted {len(records)} rows into {table} and logged {file_name}")
+
     except Exception as e:
         log.error(f"Insert failed for {table}: {e}")

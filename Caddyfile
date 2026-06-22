@@ -1,0 +1,9 @@
+{$AIRFLOW_DOMAIN} {
+    encode zstd gzip
+    reverse_proxy airflow-webserver:8080
+}
+
+{$DASHBOARD_DOMAIN} {
+    encode zstd gzip
+    reverse_proxy dashboard:8501
+}

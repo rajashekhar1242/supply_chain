@@ -3,6 +3,7 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 from sqlalchemy import create_engine, text
+from sqlalchemy.engine import URL
 import plotly.express as px
 import plotly.graph_objects as go
 from dotenv import load_dotenv
@@ -18,79 +19,74 @@ st.title("Supply Chain Control Tower")
 # DATABASE CONNECTION
 # -----------------------------------------------------
 
+# -----------------------------------------------------
+# DATABASE CONNECTION (DEPLOYABLE FIX)
+# -----------------------------------------------------
+
 @st.cache_resource
-
 def get_engine():
+    database_url = os.getenv("DATABASE_URL")
 
-    import os
-    from dotenv import load_dotenv
+    if database_url:
+        # Some providers still return the legacy postgres:// scheme.
+        if database_url.startswith("postgres://"):
+            database_url = database_url.replace(
+                "postgres://", "postgresql+psycopg2://", 1
+            )
+        elif database_url.startswith("postgresql://"):
+            database_url = database_url.replace(
+                "postgresql://", "postgresql+psycopg2://", 1
+            )
+        connection_target = database_url
+    else:
+        required = ["DB_USER", "DB_PASS", "DB_HOST", "DB_NAME"]
+        missing = [name for name in required if not os.getenv(name)]
+        if missing:
+            raise RuntimeError(
+                "Database configuration is missing: " + ", ".join(missing)
+            )
 
-    # -----------------------------------------
-    # 🔐 SAFE SECRET READER (CRITICAL FIX)
-    # -----------------------------------------
-    def get_secret(key):
-        try:
-            return st.secrets[key]
-        except:
-            return None
+        connection_target = URL.create(
+            drivername="postgresql+psycopg2",
+            username=os.getenv("DB_USER"),
+            password=os.getenv("DB_PASS"),
+            host=os.getenv("DB_HOST"),
+            port=int(os.getenv("DB_PORT", "5432")),
+            database=os.getenv("DB_NAME"),
+            query={"sslmode": os.getenv("DB_SSLMODE", "require")},
+        )
 
-    # -----------------------------------------
-    # 🔐 1. Try Streamlit Secrets (SAFE)
-    # -----------------------------------------
-    DB_USER = get_secret("DB_USER")
-    DB_PASS = get_secret("DB_PASSWORD")
-    DB_HOST = get_secret("DB_HOST")
-    DB_PORT = get_secret("DB_PORT") or "5432"
-    DB_NAME = get_secret("DB_NAME")
-
-    # -----------------------------------------
-    # 💻 2. Fallback to LOCAL .env
-    # -----------------------------------------
-    if not all([DB_USER, DB_PASS, DB_HOST, DB_NAME]):
-
-        load_dotenv()
-
-        DB_USER = os.getenv("DB_USER")
-        DB_PASS = os.getenv("DB_PASS")
-        DB_HOST = os.getenv("DB_HOST")
-        DB_PORT = os.getenv("DB_PORT", "5432")
-        DB_NAME = os.getenv("DB_NAME")
-
-    # -----------------------------------------
-    # 🚨 3. FINAL SAFETY CHECK
-    # -----------------------------------------
-    if not all([DB_USER, DB_PASS, DB_HOST, DB_NAME]):
-        st.error("❌ Database credentials missing (no .env or secrets)")
-        st.stop()
-
-    # -----------------------------------------
-    # 🚀 4. CREATE ENGINE
-    # -----------------------------------------
-    engine = create_engine(
-        f"postgresql+psycopg2://{DB_USER}:{DB_PASS}@{DB_HOST}:{DB_PORT}/{DB_NAME}",
+    return create_engine(
+        connection_target,
         pool_pre_ping=True,
         pool_recycle=1800,
-        connect_args={"sslmode": "require"}
+        pool_size=5,
+        max_overflow=5,
     )
 
-    return engine
 
-engine = get_engine()
+try:
+    engine = get_engine()
+except Exception as exc:
+    st.error(f"Unable to configure the analytics database: {exc}")
+    st.stop()
 
 # -----------------------------------------------------
 # QUERY HELPER
 # -----------------------------------------------------
 
 def run_query(sql, params=None):
+
     with engine.connect() as conn:
-        df = pd.read_sql_query(sql, conn, params=params)  # ✅ REMOVE text()
+        df = pd.read_sql_query(text(sql), conn, params=params)
+
     return df
 
 def safe_query(sql: str, params=None):
     params = params or {}
     try:
         with engine.connect() as conn:
-            return pd.read_sql_query(sql, conn, params=params)  # ✅ REMOVE text()
+            return pd.read_sql_query(text(sql), conn, params=params)
     except Exception as exc:
         st.error(f"⚠️ Query failed: {exc}")
         return pd.DataFrame()
@@ -748,7 +744,13 @@ with tab4:
         fig_trend.add_trace(go.Scatter(x=df_perf["date"], y=df_perf["otif_rate"], name="OTIF"))
         fig_trend.add_trace(go.Scatter(x=df_perf["date"], y=df_perf["otif_ma"], name="OTIF Trend", line=dict(dash="dot")))
 
-        fig_trend.update_layout(template="plotly_white", height=400)
+        fig_trend.update_layout(
+        template="plotly_white",
+        height=400,
+        title="OTIF Performance Trend Over Time",
+        xaxis_title="Date",
+        yaxis_title="OTIF Percentage (%)"
+            )
 
         st.plotly_chart(fig_trend, use_container_width=True)
 
