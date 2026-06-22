@@ -1,5 +1,25 @@
+# Secrets
+.env
+.env.*
+!.env.example
+.streamlit/secrets.toml
+
+# Python
+venv/
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+
+# Runtime and generated artifacts
 logs/
 *.log
+catboost_info/
+data/processed/*_1*.csv
 
-__pycache__/
-*.pyc
+# OS and editors
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
